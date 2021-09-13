@@ -7,15 +7,18 @@
       </a>
     </li>
     {% if request.user.user_type == "1" %}
+    {% url 'admin_view_administrators' as admin_view_administrators %}
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link {% if request.path == admin_view_administrators %} active {% endif %}"
+         href="{{ admin_view_administrators }}">
         <i class="ni ni-settings-gear-65 text-red"></i>
         <span class="nav-link-text">Administrators</span>
       </a>
     </li>
     {% endif %}
+    {% url 'admin_view_students' as admin_view_students %}
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link {% if request.path == admin_view_students %} active {% endif %}" href="{{ admin_view_students }}">
         <i class="ni ni-hat-3 text-primary"></i>
         <span class="nav-link-text">Students</span>
       </a>

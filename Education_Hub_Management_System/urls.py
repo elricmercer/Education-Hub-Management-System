@@ -32,4 +32,11 @@ urlpatterns = [
     path('admin_profile', AdminViews.Profile, name="admin_profile"),
     path('admin_edit_profile', AdminViews.EditProfile, name="admin_edit_profile"),
     path('admin_edit_profile_save', AdminViews.SaveEditProfile, name="admin_edit_profile_save"),
+    path('admin_profile_pic_save', AdminViews.SaveProfilePic, name="admin_profile_pic_save"),
+    path('admin_profile_pic_remove', AdminViews.RemoveProfilePic, name="admin_profile_pic_remove"),
+    path('admin_view_administrators', AdminViews.ViewAdministrators, name="admin_view_administrators"),
+    path('admin_add_administrators_save', AdminViews.SaveAddAdmin, name="admin_add_administrators_save"),
+    path('admin_edit_administrators_save', AdminViews.SaveEditAdmin, name="admin_edit_administrators_save"),
+    path('admin_delete_administrators/<str:superUserID>', AdminViews.DeleteAdmin, name="admin_delete_administrators"),
+    path('admin_view_students', AdminViews.ViewStudents, name="admin_view_students"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -63,6 +63,46 @@
             </div>
             <div class="col-4 text-right">
               <a href="{%  url 'admin_edit_profile' %}" class="btn btn-sm btn-primary">Edit Profile</a>
+              <a href="#ModalProfilePic" class="btn btn-sm btn-primary" data-toggle="modal">Profile Pic</a>
+            </div>
+            <div class="modal fade" tabindex="-1" role="dialog" id="ModalProfilePic" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Profile Pic:</h5>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    <div class="modal-body">
+                      {% if admin.pic == "" %}
+                        <a type="button" class="btn btn-primary"  href="#ModalUploadPic" data-toggle="modal" data-dismiss="modal">Upload</a>
+                      {% else %}
+                        <button type="button" class="btn btn-primary" disabled="disabled">Upload</button>
+                      {% endif %}
+                      <a type="button" class="btn btn-danger" href="{% url 'admin_profile_pic_remove' %}" onclick="return confirm('Are you sure you want to remove profile pic')">Remove</a>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal fade" tabindex="-1" role="dialog" id="ModalUploadPic">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Upload Profile Pic:</h5>
+                      <a type="button" class="btn btn-default" href="#ModalProfilePic" data-toggle="modal" data-dismiss="modal">Back</a>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    <form role="form" action="{% url 'admin_profile_pic_save' %}" method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="modal-body">
+                        <label class="form-control-label">Upload</label>
+                        <input type="file" name="profilePic" class="form-control">
+                      </div>
+                      <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                      </div>
+                    </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -116,6 +156,20 @@
               </div>
             </div>
           </form>
+          <div class="form-group">
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+                {% endif %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>

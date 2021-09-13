@@ -43,7 +43,6 @@ def EditProfile(request):  # CHANGE THIS TO MODAL
     return render(request, "Admin_Pages/edit_admin_profile_template.html", context)
 
 
-@csrf_exempt
 def SaveEditProfile(request):
     if request.method != "POST":
         return HttpResponse("<h2>Method not allowed</h2>")
@@ -242,6 +241,13 @@ def SaveAddAdmin(request):
             return HttpResponseRedirect(reverse("admin_view_administrators"))
 
 
+def EditAdmin(request, superID):
+    superUser = SuperUser.objects.get(id=superID)
+    adminUser = Admin.objects.get(super_id=superID)
+    context = {"superUser": superUser, "adminUser": adminUser}
+    return render(request, "Super_User_Pages/edit_admin_template.html", context)
+
+
 def SaveEditAdmin(request):
     if request.method != "POST":
         return HttpResponse("<h2>Method not allowed</h2>")
@@ -321,11 +327,12 @@ def DeleteAdmin(request, superUserID):
     superUser = SuperUser.objects.filter(id=superUserID).delete()
     messages.success(request, "Deleted")
     return HttpResponseRedirect(reverse("admin_view_administrators"))
+
+
 # END OF ADMINISTRATORS SECTION
 
 
 # STUDENT SECTION
 def ViewStudents(request):
-
     return render(request, "Admin_Pages/view_students_template.html")
 # END OF STUDENT SECTION

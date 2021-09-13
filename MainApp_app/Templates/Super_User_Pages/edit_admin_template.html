@@ -1,0 +1,259 @@
+{% extends 'Admin_Pages/base_template.html' %}
+{% load static %}
+{% block title_template %}
+    <title>Edit Administrator</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<div class="col-xl-8 order-xl-1">
+  <div class="card" style="left: 110px; top: 10px;">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h3 class="mb-0">Administrator ID : {{ adminUser.id }} | Username: {{ superUser.username }} </h3>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form id="editAdmin" role="form">
+        {% csrf_token %}
+        <input type="hidden" name="adminSuperID" value="{{ superUser.id }}">
+        <input type="hidden" name="currentUsername" value="{{ superUser.username }}">
+        <input type="hidden" name="currentEmail" value="{{ superUser.email }}">
+        <input type="hidden" name="currentPhoneNo" value="{{ adminUser.phone_no }}">
+        <div class="pl-lg-4">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">First Name:</h5>
+                <input class="form-control" type="text" name="firstName" maxlength="150" value="{{ superUser.first_name }}" required="required">
+                <div id="firstName2"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Last Name:</h5>
+                <input class="form-control" type="text" name="lastName" maxlength="150" value="{{ superUser.last_name }}" required="required">
+                <div id="lastName2"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Username:</h5>
+                <input class="form-control" type="text" name="username" maxlength="150" value="{{ superUser.username }}" required="required">
+                <div id="username2"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Email:</h5>
+                <input class="form-control" type="email" name="email" maxlength="254" value="{{ superUser.email }}" required="required">
+                <div id="email2"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Gender:</h5>
+                <select name="gender" class="form-control" required="required">
+                  <option>{{ adminUser.gender }}</option>
+                  {% if adminUser.gender == "Male"  %}
+                    <option>Female</option>
+                    <option>Others</option>
+                  {% elif adminUser.gender == "Female" %}
+                    <option>Male</option>
+                    <option>Others</option>
+                  {% else %}
+                    <option>Male</option>
+                    <option>Female</option>
+                  {% endif %}
+                </select>
+                <div id="gender2"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Date of Birth:</h5>
+                  <input class="form-control" type="date" name="dob" required="required" value="{{ adminUser.dob }}">
+                <div id="dob2"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Phone Number:</h5>
+                  <input class="form-control" type="text" name="phoneNo" maxlength="20" value="{{ adminUser.phone_no }}" required="required">
+                <div id="phoneNo2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="success2"></div>
+        <div id="failed2"></div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Edit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+    //EDIT ADMINISTRATORS
+    $("#editAdmin").on("submit", function(event)
+    {
+      event.preventDefault()
+      var editAdminForm = $("#editAdmin")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_edit_administrators_save' %}",
+        data: editAdminForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //FIRST NAME
+          if(response=="firstName")
+          {
+            $("#firstName2").html
+            (
+              '<p style="color:red"><b>Error! Alphabets only</b></p>'
+            )
+          }
+          else
+          {
+            $("#firstName2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //LAST NAME
+          if(response=="lastName")
+          {
+            $("#lastName2").html
+            (
+              '<p style="color:red"><b>Error! Alphabets only</b></p>'
+            )
+          }
+          else
+          {
+            $("#lastName2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //USERNAME
+          if(response=="username")
+          {
+            $("#username2").html
+            (
+              '<p style="color:red"><b>Error! Username taken</b></p>'
+            )
+          }
+          else
+          {
+            $("#username2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //EMAIL
+          if(response=="email")
+          {
+            $("#email2").html
+            (
+              '<p style="color:red"><b>Error! Email already exists</b></p>'
+            )
+          }
+          else
+          {
+            $("#email2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //PHONE NUMBER
+          if(response=="phoneNo")
+          {
+            $("#phoneNo2").html
+            (
+              '<p style="color:red"><b>Error! Phone number already exists</b></p>'
+            )
+          }
+          else if(response=="phoneNo2")
+          {
+            $("#phoneNo2").html
+            (
+              '<p style="color:red"><b>Error! Enter correct phone number</b></p>'
+            )
+          }
+          else
+          {
+            $("#phoneNo2").html
+            (
+              '<p></p>'
+            )
+          }
+          //ADMIN EDITED
+          if(response=="success")
+          {
+            $("#success2").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Edited</div>'
+            )
+          }
+          else
+          {
+            $("#success2").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED TO EDIT
+          if(response=="failed")
+          {
+            $("#failed2").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Error! Failed to edit</div>'
+            )
+          }
+          else
+          {
+            $("#failed2").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+  })
+</script>
+{% endblock custom_js %}

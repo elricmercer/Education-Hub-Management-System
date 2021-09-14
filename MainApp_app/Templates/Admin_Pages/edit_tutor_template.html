@@ -1,6 +1,6 @@
 {% extends 'Admin_Pages/base_template.html' %}
 {% block title_template %}
-    <title>Edit Administrator</title>
+    <title>Edit Tutor</title>
 {% endblock title_template %}
 {% block body_content_template %}
 <div class="col-xl-8 order-xl-1">
@@ -8,17 +8,17 @@
     <div class="card-header">
       <div class="row align-items-center">
         <div class="col-8">
-          <h3 class="mb-0">Administrator ID : {{ adminUser.id }} | Username: {{ superUser.username }} </h3>
+          <h3 class="mb-0">Tutor ID : {{ tutor.id }} | Username: {{ superUser.username }} </h3>
         </div>
       </div>
     </div>
     <div class="card-body">
-      <form id="editAdmin" role="form">
+      <form id="editTutor" role="form">
         {% csrf_token %}
-        <input type="hidden" name="adminSuperID" value="{{ superUser.id }}">
+        <input type="hidden" name="tutorSuperID" value="{{ superUser.id }}">
         <input type="hidden" name="currentUsername" value="{{ superUser.username }}">
         <input type="hidden" name="currentEmail" value="{{ superUser.email }}">
-        <input type="hidden" name="currentPhoneNo" value="{{ adminUser.phone_no }}">
+        <input type="hidden" name="currentPhoneNo" value="{{ tutor.phone_no }}">
         <div class="pl-lg-4">
           <div class="row">
             <div class="col-lg-6">
@@ -53,11 +53,11 @@
               <div class="form-group">
                 <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Gender:</h5>
                 <select name="gender" class="form-control" required="required">
-                  <option>{{ adminUser.gender }}</option>
-                  {% if adminUser.gender == "Male"  %}
+                  <option>{{ tutor.gender }}</option>
+                  {% if tutor.gender == "Male"  %}
                     <option>Female</option>
                     <option>Others</option>
-                  {% elif adminUser.gender == "Female" %}
+                  {% elif tutor.gender == "Female" %}
                     <option>Male</option>
                     <option>Others</option>
                   {% else %}
@@ -71,14 +71,14 @@
             <div class="col-lg-6">
               <div class="form-group">
                 <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Date of Birth:</h5>
-                  <input class="form-control" type="date" name="dob" required="required" value="{{ adminUser.dob }}">
+                  <input class="form-control" type="date" name="dob" required="required" value="{{ tutor.dob }}">
                 <div id="dob"></div>
               </div>
             </div>
             <div class="col-lg-6">
               <div class="form-group">
                 <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Phone Number:</h5>
-                  <input class="form-control" type="text" name="phoneNo" maxlength="20" value="{{ adminUser.phone_no }}" required="required">
+                  <input class="form-control" type="text" name="phoneNo" maxlength="20" value="{{ tutor.phone_no }}" required="required">
                 <div id="phoneNo"></div>
               </div>
             </div>
@@ -112,18 +112,17 @@
 <script>
   $(document).ready(function()
   {
-    //EDIT ADMINISTRATORS
-    $("#editAdmin").on("submit", function(event)
+    $("#editTutor").on("submit", function(event)
     {
       event.preventDefault()
-      var editAdminForm = $("#editAdmin")
+      var editTutorForm = $("#editTutor")
       console.log("calling ajax")
 
       $.ajax
       ({
         type: "POST",
-        url: "{% url 'admin_edit_administrators_save' %}",
-        data: editAdminForm.serialize(),
+        url: "{% url 'admin_edit_tutors_save' %}",
+        data: editTutorForm.serialize(),
 
         success: function(response)
         {
@@ -222,7 +221,8 @@
               '<p></p>'
             )
           }
-          //ADMIN EDITED
+
+          //TUTOR EDITED
           if(response=="success")
           {
             $("#success").html

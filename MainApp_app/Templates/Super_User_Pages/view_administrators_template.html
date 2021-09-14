@@ -1,9 +1,9 @@
 {% extends 'Admin_Pages/base_template.html' %}
-{% load static %}
 {% block title_template %}
     <title>Administrators</title>
 {% endblock title_template %}
 {% block body_content_template %}
+<!--MENU OPTIONS-->
 <div class="header bg-primary pb-6">
   <div class="container-fluid">
     <div class="header-body">
@@ -15,6 +15,7 @@
     </div>
   </div>
 </div>
+<!--ADD ADMINISTRATORS MODAL-->
 <div class="modal fade" tabindex="-1" role="dialog" id="ModalAddAdmin">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
@@ -30,42 +31,42 @@
                 <div class="col-lg-6">
                   <div class="form-group">
                     <h5 class="modal-title" align="left" style="margin-bottom: 10px;">First Name:</h5>
-                    <input class="form-control" type="text" name="firstName" maxlength="150" placeholder="eg. John" required="required">
+                    <input class="form-control" type="text" name="firstName" maxlength="150" placeholder="eg: John" required="required">
                     <div id="firstName"></div>
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Last Name:</h5>
-                    <input class="form-control" type="text" name="lastName" maxlength="150" placeholder="eg. Doe" required="required">
+                    <input class="form-control" type="text" name="lastName" maxlength="150" placeholder="eg: Doe" required="required">
                     <div id="lastName"></div>
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Username:</h5>
-                    <input class="form-control" type="text" name="username" maxlength="150" placeholder="eg. johndoe111" required="required">
+                    <input class="form-control" type="text" name="username" maxlength="150" placeholder="eg: johndoe111" required="required">
                     <div id="username"></div>
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Email:</h5>
-                    <input class="form-control" type="email" name="email" maxlength="254" placeholder="eg. johndoe@gmail.com" required="required">
+                    <input class="form-control" type="email" name="email" maxlength="254" placeholder="eg: johndoe@gmail.com" required="required">
                     <div id="email"></div>
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Password:</h5>
-                    <input class="form-control" type="password" name="password" maxlength="50" placeholder="eg. *******" required="required">
+                    <input class="form-control" type="password" name="password" maxlength="50" placeholder="eg: *******" required="required">
                     <div id="password"></div>
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Confirm Password:</h5>
-                    <input class="form-control" type="password" name="confPassword" maxlength="50" placeholder="eg. *******" required="required">
+                    <input class="form-control" type="password" name="confPassword" maxlength="50" placeholder="eg: *******" required="required">
                     <div id="confPassword"></div>
                   </div>
                 </div>
@@ -91,7 +92,7 @@
                 <div class="col-lg-6">
                   <div class="form-group">
                     <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Phone Number:</h5>
-                    <input class="form-control" type="text" name="phoneNo" maxlength="20" placeholder="eg. 1234567890" required="required">
+                    <input class="form-control" type="text" name="phoneNo" maxlength="20" placeholder="eg: 1234567890" required="required">
                     <div id="phoneNo"></div>
                   </div>
                 </div>
@@ -107,6 +108,7 @@
     </div>
   </div>
 </div>
+<!--TABLE-->
 <div class="container-fluid mt--6">
   <!-- Dark table -->
   <div class="row">
@@ -264,6 +266,20 @@
             {% endif %}
           </nav>
         </div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>
@@ -383,6 +399,13 @@
             $("#phoneNo").html
             (
               '<p style="color:red"><b>Error! Enter correct phone number</b></p>'
+            )
+          }
+          else if(response=="phoneNo3")
+          {
+            $("#phoneNo").html
+            (
+              '<p style="color:red"><b>Error! Phone number minimum length 10 digits</b></p>'
             )
           }
           else

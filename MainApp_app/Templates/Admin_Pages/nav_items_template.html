@@ -17,14 +17,23 @@
     </li>
     {% endif %}
     {% url 'admin_view_students' as admin_view_students %}
+    {% url 'admin_view_student_payment' studID=id as admin_view_student_payment %}
+    {% url 'admin_edit_students' superID=id as admin_edit_students %}
     <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_students %} active {% endif %}" href="{{ admin_view_students }}">
+      <a class="nav-link {% if request.path == admin_view_students %} active {% endif %}
+        {% if request.path == admin_view_student_payment %} active {% endif %}
+        {% if request.path == admin_edit_students %} active {% endif %}" href="{{ admin_view_students }}">
         <i class="ni ni-hat-3 text-primary"></i>
         <span class="nav-link-text">Students</span>
       </a>
     </li>
+    {% url 'admin_view_tutors' as admin_view_tutors %}
+    {% url 'admin_edit_tutors' superID=id as admin_edit_tutors %}
+    {% url 'admin_view_tutor_payment' tutorID=id as admin_view_tutor_payment %}
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link {% if request.path == admin_view_tutors %} active {% endif %}
+        {% if request.path == admin_edit_tutors %} active {% endif %}
+        {% if request.path == admin_view_tutor_payment %} active {% endif %}" href="{{ admin_view_tutors }}">
         <i class="ni ni-single-02 text-default"></i>
         <span class="nav-link-text">Tutors</span>
       </a>

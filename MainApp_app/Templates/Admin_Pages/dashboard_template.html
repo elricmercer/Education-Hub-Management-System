@@ -10,6 +10,7 @@
     <div class="header-body">
       <!-- Card stats -->
       <div class="row">
+<!--            TOTAL USERS-->
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
@@ -28,6 +29,28 @@
             </div>
           </div>
         </div>
+<!--            TOTAL ADMINISTRATORS (NEWLY ADDED)-->
+        {% if request.user.user_type == "1" %}
+        <div class="col-xl-3 col-md-6">
+          <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">Total Administrators</h5>
+                  <span class="h2 font-weight-bold mb-0"></span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
+                    <i class="ni ni-hat-3"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+<!--            TOTAL STUDENTS-->
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
@@ -46,6 +69,7 @@
             </div>
           </div>
         </div>
+<!--            TOTAL TUTORS-->
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
@@ -64,6 +88,7 @@
             </div>
           </div>
         </div>
+<!--            TOTAL SCHEDULES-->
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
@@ -82,6 +107,7 @@
             </div>
           </div>
         </div>
+<!--            TOTAL CLASSES-->
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
@@ -100,6 +126,7 @@
             </div>
           </div>
         </div>
+<!--            TOTAL COURSES-->
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
@@ -145,6 +172,7 @@
         </div>
       </div>
   </div>
+<!--  FOOTER-->
   <footer class="footer pt-0">
     <div class="row align-items-center justify-content-lg-between">
       <div class="col-lg-6">

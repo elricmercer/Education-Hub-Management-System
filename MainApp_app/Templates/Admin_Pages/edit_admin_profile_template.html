@@ -1,5 +1,4 @@
 {% extends 'Admin_Pages/base_template.html' %}
-{% load static %}
 {% block title_template %}
     <title>Edit Profile</title>
 {% endblock title_template %}
@@ -205,6 +204,13 @@
               $("#phoneNo").html
               (
                 '<p style="color:red"><b>Error! Enter correct phone number</b></p>'
+              )
+            }
+            else if(response == "phoneNo3")
+            {
+              $("#phoneNo").html
+              (
+                '<p style="color:red"><b>Error! Phone no length minimum 10 digits</b></p>'
               )
             }
             else

@@ -1,31 +1,32 @@
 {% extends 'Admin_Pages/base_template.html' %}
 {% block title_template %}
-    <title>Students</title>
+    <title>Tutors</title>
 {% endblock title_template %}
 {% block body_content_template %}
-<!--HEAD-->
+<!--MENU OPTIONS-->
 <div class="header bg-primary pb-6">
   <div class="container-fluid">
     <div class="header-body">
       <div class="row align-items-center py-4">
-        <div class="col-lg-2 col-6 text-right">
-            <a href="#ModalAddStudent" data-toggle="modal" class="btn btn-sm btn-neutral">Add</a>
-            <a href="#ModalPaymentStudent" data-toggle="modal" class="btn btn-sm btn-neutral">Payment</a>
+        <div class="col-lg-3 col-6 text-right">
+          <a href="#ModalAddTutor" data-toggle="modal" class="btn btn-sm btn-neutral">Add</a>
+          <a href="#ModalPaymentTutor" data-toggle="modal" class="btn btn-sm btn-neutral">Payment</a>
+          <a href="#" class="btn btn-sm btn-neutral">Certification</a>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!--ADD STUDENT MODAL-->
-<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddStudent">
+<!--ADD TUTOR MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddTutor">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Student Form</h5>
+          <h5 class="modal-title">Tutor Form</h5>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
         <div class="modal-body">
-          <form id="addStudent" role="form">
+          <form id="addTutor" role="form">
             {% csrf_token %}
             <div class="pl-lg-4">
               <div class="row">
@@ -110,7 +111,7 @@
   </div>
 </div>
 <!--PAYMENT MODAL-->
-<div class="modal fade" tabindex="-1" role="dialog" id="ModalPaymentStudent">
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalPaymentTutor">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header">
@@ -118,15 +119,15 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
         <div class="modal-body">
-          <form id="paymentStudent" role="form">
+          <form id="paymentTutor" role="form">
             {% csrf_token %}
             <div class="pl-lg-4">
               <div class="row">
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Enter Student ID:</h5>
-                    <input class="form-control" type="text" name="studentID" placeholder="eg: 12" required="required">
-                    <div id="studentID"></div>
+                    <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Enter Tutor ID:</h5>
+                    <input class="form-control" type="text" name="tutorID" placeholder="eg: 12" required="required">
+                    <div id="tutorID"></div>
                   </div>
                 </div>
               </div>
@@ -146,7 +147,7 @@
     <div class="col">
       <div class="card bg-default shadow">
         <div class="card-header bg-transparent border-0">
-          <h3 class="text-white mb-0">Students</h3>
+          <h3 class="text-white mb-0">Tutors</h3>
         </div>
         <div class="table-responsive">
           <table class="table align-items-center table-dark table-flush">
@@ -172,9 +173,9 @@
             {% for sup in users %}
               <tr>
                 <th scope="row">
-                  {% for stud in student %}
-                    {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.pic }}</span>
+                  {% for tut in tutor %}
+                    {% ifequal sup.id tut.super_id %}
+                      <span class="name mb-0 text-sm">{{ tut.pic }}</span>
                     {% endifequal %}
                   {% endfor %}
                 </th>
@@ -182,9 +183,9 @@
                     <span class="name mb-0 text-sm">{{ sup.id }}</span>
                 </th>
                 <th scope="row">
-                  {% for stud in student %}
-                    {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.id }}</span>
+                  {% for tut in tutor %}
+                    {% ifequal sup.id tut.super_id %}
+                      <span class="name mb-0 text-sm">{{ tut.id }}</span>
                     {% endifequal %}
                   {% endfor %}
                 </th>
@@ -201,23 +202,23 @@
                     <span class="name mb-0 text-sm">{{ sup.email }}</span>
                 </th>
                 <th scope="row">
-                  {% for stud in student %}
-                    {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.phone_no }}</span>
+                  {% for tut in tutor %}
+                    {% ifequal sup.id tut.super_id %}
+                      <span class="name mb-0 text-sm">{{ tut.phone_no }}</span>
                     {% endifequal %}
                   {% endfor %}
                 </th>
                 <th scope="row">
-                  {% for stud in student %}
-                    {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.gender }}</span>
+                  {% for tut in tutor %}
+                    {% ifequal sup.id tut.super_id %}
+                      <span class="name mb-0 text-sm">{{ tut.gender }}</span>
                     {% endifequal %}
                   {% endfor %}
                 </th>
                 <th scope="row">
-                  {% for stud in student %}
-                    {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.dob }}</span>
+                  {% for tut in tutor %}
+                    {% ifequal sup.id tut.super_id %}
+                      <span class="name mb-0 text-sm">{{ tut.dob }}</span>
                     {% endifequal %}
                   {% endfor %}
                 </th>
@@ -225,16 +226,16 @@
                     <span class="name mb-0 text-sm">{{ sup.last_login }}</span>
                 </th>
                 <th scope="row">
-                  {% for stud in student %}
-                    {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.created_at }}</span>
+                  {% for tut in tutor %}
+                    {% ifequal sup.id tut.super_id %}
+                      <span class="name mb-0 text-sm">{{ tut.created_at }}</span>
                     {% endifequal %}
                   {% endfor %}
                 </th>
                 <th scope="row">
-                  {% for stud in student %}
-                    {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.updated_at }}</span>
+                  {% for stud in tutor %}
+                    {% ifequal sup.id tut.super_id %}
+                      <span class="name mb-0 text-sm">{{ tut.updated_at }}</span>
                     {% endifequal %}
                   {% endfor %}
                 </th>
@@ -244,9 +245,9 @@
                       <i class="fas fa-ellipsis-v"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                      <a class="dropdown-item" href="{% url 'admin_edit_students' superID=sup.id %}">Edit</a>
+                      <a class="dropdown-item" href="{% url 'admin_edit_tutors' superID=sup.id %}">Edit</a>
                       {% if request.user.user_type == "1" %}
-                        <a class="dropdown-item" href="{% url 'admin_delete_students' superID=sup.id %}" onclick="return confirm('Are you sure you want to remove this student')">Delete</a>
+                        <a class="dropdown-item" href="{% url 'admin_delete_tutors' superID=sup.id %}" onclick="return confirm('Are you sure you want to remove this tutor')">Delete</a>
                       {% endif %}
                     </div>
                   </div>
@@ -322,18 +323,18 @@
 <script>
   $(document).ready(function()
   {
-    //ADD STUDENTS
-    $("#addStudent").on("submit", function(event)
+    //ADD TUTORS
+    $("#addTutor").on("submit", function(event)
     {
       event.preventDefault()
-      var addStudentForm = $("#addStudent")
+      var addTutorForm = $("#addTutor")
       console.log("calling ajax")
 
       $.ajax
       ({
         type: "POST",
-        url: "{% url 'admin_add_students_save' %}",
-        data: addStudentForm.serialize(),
+        url: "{% url 'admin_add_tutors_save' %}",
+        data: addTutorForm.serialize(),
 
         success: function(response)
         {
@@ -434,6 +435,13 @@
               '<p style="color:red"><b>Error! Phone number minimum length 10 digits</b></p>'
             )
           }
+          else if(response=="phoneNo3")
+          {
+            $("#phoneNo").html
+            (
+              '<p style="color:red"><b>Error! Phone number already exists</b></p>'
+            )
+          }
           else
           {
             $("#phoneNo").html
@@ -442,7 +450,7 @@
             )
           }
 
-          //STUDENT ADDED
+          //TUTOR ADDED
           if(response=="success")
           {
             $("#success").html
@@ -481,18 +489,18 @@
       })
     })
 
-    //SEARCH STUDENT FOR PAYMENT
-    $("#paymentStudent").on("submit", function(event)
+    //SEARCH TUTOR
+    $("#paymentTutor").on("submit", function(event)
     {
       event.preventDefault()
-      var paymentStudentForm = $("#paymentStudent")
+      var paymentTutorForm = $("#paymentTutor")
       console.log("calling ajax")
 
       $.ajax
       ({
         type: "POST",
-        url: "{% url 'admin_search_student_for_payment' %}",
-        data: paymentStudentForm.serialize(),
+        url: "{% url 'admin_search_tutor_payment' %}",
+        data: paymentTutorForm.serialize(),
 
         success: function(response)
         {
@@ -500,7 +508,7 @@
 
           if(response.status == 0)
           {
-            $("#studentID").html
+            $("#tutorID").html
             (
               '<p style="color:red"><b>Error! ID does not exists</b></p>'
             )

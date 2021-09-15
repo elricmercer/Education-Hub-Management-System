@@ -13,7 +13,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from Education_Hub_Management_System.settings import BASE_DIR
-from MainApp_app.models import Admin, SuperUser, Student, StudentPayment, Tutor, TutorEarnings
+from MainApp_app.models import Admin, SuperUser, Student, StudentPayment, Tutor, TutorEarnings, Course, \
+    TutorsCertifiedToCourse, TutorApplyToCertifyToCourse, Schedule
 
 
 # DASHBOARD SECTION
@@ -166,196 +167,10 @@ def RemoveProfilePic(request):
 # END OF PROFILE SECTION
 
 
-# ADMINISTRATORS SECTION (FOR SUPER USER ONLY)
-def ViewAdministrators(request):
-    admin = Admin.objects.all()
-    superUser = SuperUser.objects.filter(user_type="2")
-    page = request.GET.get('page', 1)
-    paginator = Paginator(superUser, 6)
-
-    try:
-        users = paginator.page(page)
-    except PageNotAnInteger:
-        users = paginator.page(1)
-    except EmptyPage:
-        users = paginator.page(paginator.num_pages)
-
-    context = {"admin": admin, "users": users}
-
-    return render(request, "Super_User_Pages/view_administrators_template.html", context)
-
-
-def SaveAddAdmin(request):
-    if request.method != "POST":
-        return HttpResponse("<h2>Method not allowed</h2>")
-    else:
-        if request.is_ajax:
-            firstName = request.POST.get("firstName")
-            lastName = request.POST.get("lastName")
-            username = request.POST.get("username")
-            email = request.POST.get("email")
-            password = request.POST.get("password")
-            confPassword = request.POST.get("confPassword")
-            gender = request.POST.get("gender")
-            dob = request.POST.get("dob")
-            phoneNo = request.POST.get("phoneNo")
-            adminCheck = Admin.objects.all()
-            superUserCheck = SuperUser.objects.all()
-
-            if firstName.isalpha():
-                pass
-            else:
-                return HttpResponse("firstName")
-
-            if lastName.isalpha():
-                pass
-            else:
-                return HttpResponse("lastName")
-
-            for sup in superUserCheck:
-                if username == sup.username:
-                    return HttpResponse("username")
-
-            for sup in superUserCheck:
-                if email == sup.email:
-                    return HttpResponse("email")
-
-            if password != confPassword:
-                return HttpResponse("confPassword")
-
-            for adCheck in adminCheck:
-                if phoneNo == adCheck.phone_no:
-                    return HttpResponse("phoneNo")
-
-            if phoneNo.isnumeric():
-                pass
-            else:
-                return HttpResponse("phoneNo2")
-
-            if len(phoneNo) >= 10:
-                pass
-            else:
-                return HttpResponse("phoneNo3")
-
-            try:
-                superUser = SuperUser.objects.create_user(username=username, first_name=firstName, last_name=lastName,
-                                                          email=email,
-                                                          password=password, user_type="2")
-                superUser.save()
-                admin = Admin(gender=gender, dob=dob, phone_no=phoneNo, super_id=superUser.id)
-                admin.save()
-                return HttpResponse("success")
-            except:
-                return HttpResponse("failed")
-        else:
-            messages.error(request, "Failed! To add")
-            return HttpResponseRedirect(reverse("admin_view_administrators"))
-
-
-def EditAdmin(request, superID):
-    superUser = SuperUser.objects.get(id=superID)
-    adminUser = Admin.objects.get(super_id=superID)
-    context = {"superUser": superUser, "adminUser": adminUser}
-    return render(request, "Super_User_Pages/edit_admin_template.html", context)
-
-
-def SaveEditAdmin(request):
-    if request.method != "POST":
-        return HttpResponse("<h2>Method not allowed</h2>")
-    else:
-        if request.is_ajax():
-            firstName = request.POST.get("firstName")
-            lastName = request.POST.get("lastName")
-            username = request.POST.get("username")
-            email = request.POST.get("email")
-            gender = request.POST.get("gender")
-            dob = request.POST.get("dob")
-            phoneNo = request.POST.get("phoneNo")
-            currentUsername = request.POST.get("currentUsername")
-            currentEmail = request.POST.get("currentEmail")
-            currentPhoneNo = request.POST.get("currentPhoneNo")
-            adminSuperID = request.POST.get("adminSuperID")
-            superUserAll = SuperUser.objects.all()
-            adminUserAll = Admin.objects.all()
-
-            if firstName.isalpha():
-                pass
-            else:
-                return HttpResponse("firstName")
-
-            if lastName.isalpha():
-                pass
-            else:
-                return HttpResponse("lastName")
-
-            for sup in superUserAll:
-                if username == sup.username:
-                    if username == currentUsername:
-                        pass
-                    else:
-                        return HttpResponse("username")
-
-            for sup in superUserAll:
-                if email == sup.email:
-                    if email == currentEmail:
-                        pass
-                    else:
-                        return HttpResponse("email")
-
-            for ad in adminUserAll:
-                if phoneNo == ad.phone_no:
-                    if phoneNo == currentPhoneNo:
-                        pass
-                    else:
-                        return HttpResponse("phoneNo")
-
-            if phoneNo.isnumeric():
-                pass
-            else:
-                return HttpResponse("phoneNo2")
-
-            if len(phoneNo) >= 10:
-                pass
-            else:
-                return HttpResponse("phoneNo3")
-
-            try:
-                superUser = SuperUser.objects.get(id=adminSuperID)
-                superUser.first_name = firstName
-                superUser.last_name = lastName
-                superUser.username = username
-                superUser.email = email
-                superUser.save()
-                adminUser = Admin.objects.get(super_id=adminSuperID)
-                adminUser.gender = gender
-                adminUser.dob = dob
-                adminUser.phone_no = phoneNo
-                adminUser.save()
-                return HttpResponse("success")
-            except:
-                return HttpResponse("failed")
-        else:
-            messages.error(request, "Failed! To edit")
-            return HttpResponseRedirect(reverse("admin_view_administrators"))
-
-
-def DeleteAdmin(request, superUserID):
-    try:
-        superUser = SuperUser.objects.filter(id=superUserID).delete()
-        messages.success(request, "Deleted")
-        return HttpResponseRedirect(reverse("admin_view_administrators"))
-    except:
-        messages.error(request, "Failed! To delete")
-        return HttpResponseRedirect(reverse("admin_view_administrators"))
-
-
-# END OF ADMINISTRATORS SECTION
-
-
 # STUDENT SECTION
 def ViewStudents(request):
     student = Student.objects.all()
-    superUser = SuperUser.objects.filter(user_type="4")
+    superUser = SuperUser.objects.filter(user_type="4").order_by('id')
     page = request.GET.get('page', 1)
     paginator = Paginator(superUser, 6)
 
@@ -429,7 +244,7 @@ def SaveAddStudent(request):
                 return HttpResponse("failed")
         else:
             messages.error(request, "Failed! To add")
-            return HttpResponseRedirect(reverse(""))
+            return HttpResponseRedirect(reverse("admin_view_students"))
 
 
 def EditStudent(request, superID):
@@ -443,7 +258,6 @@ def SaveEditStudent(request):
     if request.method != "POST":
         return HttpResponse("<h2>Method not allowed</h2>")
     else:
-        studSuperID = request.POST.get("studentSuperID")
         if request.is_ajax():
             studentSuperID = request.POST.get("studentSuperID")
             currentUsername = request.POST.get("currentUsername")
@@ -514,7 +328,7 @@ def SaveEditStudent(request):
 
         else:
             messages.error(request, "Failed! To edit")
-            return HttpResponseRedirect(reverse("admin_edit_students", kwargs={"superID": studSuperID}))
+            return HttpResponseRedirect(reverse("admin_view_students"))
 
 
 def DeleteStudent(request, superID):
@@ -555,7 +369,7 @@ def SearchStudentPayment(request):
 def ViewStudentPayment(request, studID):
     student = Student.objects.get(id=studID)
     superUser = SuperUser.objects.get(id=student.super_id)
-    pay = StudentPayment.objects.filter(student_id=studID)
+    pay = StudentPayment.objects.filter(student_id=studID).order_by('id')
     page = request.GET.get('page', 1)
     paginator = Paginator(pay, 6)
 
@@ -576,7 +390,8 @@ def ViewStudentPayment(request, studID):
 # TUTOR SECTION
 def ViewTutors(request):
     tutor = Tutor.objects.all()
-    superUser = SuperUser.objects.filter(user_type="3")
+    certRequestsPendingCount = TutorApplyToCertifyToCourse.objects.filter(status="Pending").count()
+    superUser = SuperUser.objects.filter(user_type="3").order_by('id')
     page = request.GET.get('page', 1)
     paginator = Paginator(superUser, 6)
 
@@ -587,7 +402,7 @@ def ViewTutors(request):
     except EmptyPage:
         users = paginator.page(paginator.num_pages)
 
-    context = {"tutor": tutor, "users": users}
+    context = {"tutor": tutor, "users": users, "certRequestsPendingCount": certRequestsPendingCount}
     return render(request, "Admin_Pages/view_tutors_template.html", context)
 
 
@@ -783,7 +598,7 @@ def SearchTutorPayment(request):
 def ViewTutorPayment(request, tutorID):
     tutor = Tutor.objects.get(id=tutorID)
     superUser = SuperUser.objects.get(id=tutor.super_id)
-    pay = TutorEarnings.objects.filter(tutor_id=tutorID)
+    pay = TutorEarnings.objects.filter(tutor_id=tutorID).order_by('id')
     page = request.GET.get('page', 1)
     paginator = Paginator(pay, 6)
 
@@ -796,4 +611,332 @@ def ViewTutorPayment(request, tutorID):
 
     context = {"tutor": tutor, "superUser": superUser, "pays": pays, "id": tutorID}
     return render(request, "Admin_Pages/view_tutor_payment_template.html", context)
+
+
+def SearchTutorCertification(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            tutorID = request.POST.get("tutorIDForCert")
+            tutor = Tutor.objects.all()
+            exists = False
+
+            for tut in tutor:
+                if tutorID == str(tut.id):
+                    exists = True
+                    break
+
+            if not exists:
+                response = {'exists': 0}
+                return HttpResponse(json.dumps(response), content_type="application/json")
+            else:
+                response = {'exists': 1, 'url': reverse("admin_view_tutor_certifications", kwargs={"tutID": tutorID})}
+                return HttpResponse(json.dumps(response), content_type="application/json")
+        else:
+            messages.error(request, "Failed! To search")
+            return HttpResponseRedirect(reverse("admin_view_tutors"))
+
+
+def ViewTutorCertifications(request, tutID):
+    tutor = Tutor.objects.get(id=tutID)
+    superUser = SuperUser.objects.get(id=tutor.super_id)
+    tutorCert = TutorsCertifiedToCourse.objects.filter(tutor_id=tutID).order_by('id')
+    course = Course.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(tutorCert, 6)
+
+    try:
+        tutorCerts = paginator.page(page)
+    except PageNotAnInteger:
+        tutorCerts = paginator.page(1)
+    except EmptyPage:
+        tutorCerts = paginator.page(paginator.num_pages)
+
+    context = {"tutor": tutor, "id": tutID, "superUser": superUser, "tutorCerts": tutorCerts, "course": course}
+    return render(request, "Admin_Pages/view_tutor_certification_template.html", context)
+
+
+def SaveTutorCertification(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            tutorID = request.POST.get("tutorID")
+            courseID = request.POST.get("courseID")
+            tutorCheck = Tutor.objects.all()
+            exists = False
+
+            for tut in tutorCheck:
+                if tutorID == str(tut.id):
+                    exists = True
+                    break
+
+            if not exists:
+                return HttpResponse("tutorID")
+
+            try:
+                certify = TutorsCertifiedToCourse(course_id=courseID, tutor_id=tutorID)
+                certify.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add")
+            return HttpResponseRedirect(reverse("admin_view_tutors"))
+
+
+def DeleteTutorCertification(request, certID, tutorID):
+    try:
+        certificate = TutorsCertifiedToCourse.objects.filter(id=certID).delete()
+        messages.success(request, "Deleted")
+        return HttpResponseRedirect(reverse("admin_view_tutor_certifications", kwargs={"tutID": tutorID}))
+    except:
+        messages.error(request, "Failed! To delete")
+        return HttpResponseRedirect(reverse("admin_view_tutor_certifications", kwargs={"tutID": tutorID}))
+
+
 # END OF TUTOR SECTION
+
+
+# COURSE SECTION
+def ViewCourse(request):
+    course = Course.objects.all().order_by('id')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(course, 6)
+
+    try:
+        courses = paginator.page(page)
+    except PageNotAnInteger:
+        courses = paginator.page(1)
+    except EmptyPage:
+        courses = paginator.page(paginator.num_pages)
+
+    daysList = []
+
+    for i in range(2, 366):
+        daysList.append(i)
+
+    context = {"courses": courses, "daysList": daysList}
+    return render(request, "Admin_Pages/view_courses_template.html", context)
+
+
+def SaveAddCourse(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            courseName = request.POST.get("courseName")
+            duration = request.POST.get("duration")
+            courseCheck = Course.objects.all()
+
+            for cour in courseCheck:
+                if courseName == cour.name:
+                    return HttpResponse("courseName")
+
+            try:
+                course = Course(name=courseName, duration=duration)
+                course.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add")
+            return HttpResponseRedirect(reverse("admin_view_course"))
+
+
+def DeleteCourse(request, courID):
+    try:
+        course = Course.objects.filter(id=courID).delete()
+        messages.success(request, "Deleted")
+        return HttpResponseRedirect(reverse("admin_view_course"))
+    except:
+        messages.error(request, "Failed! To delete")
+        return HttpResponseRedirect(reverse("admin_view_course"))
+
+
+def EditCourse(request, courID):
+    course = Course.objects.get(id=courID)
+    daysList = []
+
+    for i in range(2, 366):
+        daysList.append(i)
+
+    context = {"course": course, "daysList": daysList, "id": courID}
+    return render(request, "Admin_Pages/edit_course_template.html", context)
+
+
+def SaveEditCourse(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            courseID = request.POST.get("courseID")
+            currentCourseName = request.POST.get("currentCourseName")
+            courseName = request.POST.get("courseName")
+            duration = request.POST.get("duration")
+            courseCheck = Course.objects.all()
+
+            for cour in courseCheck:
+                if courseName == cour.name:
+                    if courseName == currentCourseName:
+                        pass
+                    else:
+                        return HttpResponse("courseName")
+
+            try:
+                course = Course.objects.get(id=courseID)
+                course.name = courseName
+                course.duration = duration
+                course.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To edit")
+            return HttpResponseRedirect(reverse("admin_view_course"))
+
+
+# END OF COURSE SECTION
+
+
+# SCHEDULE SECTION
+def ViewSchedules(request):
+    course = Course.objects.all()
+    schedule = Schedule.objects.all()
+    tutor = Tutor.objects.all()
+    superUser = SuperUser.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(schedule, 6)
+
+    try:
+        schedules = paginator.page(page)
+    except PageNotAnInteger:
+        schedules = paginator.page(1)
+    except EmptyPage:
+        schedules = paginator.page(paginator.num_pages)
+
+    context = {"course": course, "tutor": tutor, "superUser": superUser,
+               "schedules": schedules}
+    return render(request, "Admin_Pages/view_schedules_template.html", context)
+
+
+def SaveAddSchedule(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            courseID = request.POST.get("courseID")
+            duration = request.POST.get("duration")
+            day = request.POST.get("day")
+            time = request.POST.get("time")
+            status = request.POST.get("status")
+
+            try:
+                schedule = Schedule(course_id=courseID, duration=duration, day=day, time=time, status=status)
+                schedule.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add")
+            return HttpResponseRedirect(reverse("admin_view_schedules"))
+
+
+def DeleteSchedule(request, schID):
+    try:
+        schedule = Schedule.objects.filter(id=schID).delete()
+        messages.success(request, "Deleted")
+        return HttpResponseRedirect(reverse("admin_view_schedules"))
+    except:
+        messages.error(request, "Failed! To delete")
+        return HttpResponseRedirect(reverse("admin_view_schedules"))
+
+
+def SaveAddTutorToSchedule(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            scheduleID = request.POST.get("scheduleID")
+            tutorID = request.POST.get("tutorID")
+            scheduleCheck = Schedule.objects.all()
+            tutorCheck = Tutor.objects.all()
+            certified = TutorsCertifiedToCourse.objects.filter(tutor_id=tutorID)
+            existsSch = False
+            existsTut = False
+            qualified = False
+
+            for sch in scheduleCheck:
+                if scheduleID == str(sch.id):
+                    existsSch = True
+                    break
+
+            if not existsSch:
+                return HttpResponse("scheduleID")
+
+            for tut in tutorCheck:
+                if tutorID == str(tut.id):
+                    existsTut = True
+                    break
+
+            if not existsTut:
+                return HttpResponse("tutorID")
+
+            for cert in certified:
+                for sch in scheduleCheck:
+                    if scheduleID == str(sch.id):
+                        if sch.course_id == cert.course_id:
+                            qualified = True
+
+            if not qualified:
+                return HttpResponse("notQualified")
+
+            try:
+                schedule = Schedule.objects.get(id=scheduleID)
+                schedule.tutor_id = tutorID
+                schedule.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add")
+            return HttpResponseRedirect(reverse("admin_view_schedules"))
+
+
+def EditSchedule(request, schID):
+    schedule = Schedule.objects.get(id=schID)
+    context = {"schedule": schedule, "id": schID, }
+    return render(request, "Admin_Pages/edit_schedule_template.html", context)
+
+
+def SaveEditSchedule(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            scheduleID = request.POST.get("scheduleID")
+            duration = request.POST.get("duration")
+            day = request.POST.get("day")
+            time = request.POST.get("time")
+            status = request.POST.get("status")
+
+            try:
+                schedule = Schedule.objects.get(id=scheduleID)
+                schedule.duration = duration
+                schedule.day = day
+                schedule.time = time
+                schedule.status = status
+                schedule.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! to edit")
+            return HttpResponseRedirect(reverse("admin_view_schedules"))
+# END OF SCHEDULE SECTION
+
+
+# CLASSES SECTION
+
+# END OF CLASSES SECTION

@@ -22,35 +22,35 @@
           <div class="row">
             <div class="col-lg-6">
               <div class="form-group">
-                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">First Name:</h5>
+                <label class="form-control-label" style="margin-bottom: 10px;">First Name:</label>
                 <input class="form-control" type="text" name="firstName" maxlength="150" value="{{ superUser.first_name }}" required="required">
                 <div id="firstName"></div>
               </div>
             </div>
             <div class="col-lg-6">
               <div class="form-group">
-                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Last Name:</h5>
+                <label class="form-control-label" style="margin-bottom: 10px;">Last Name:</label>
                 <input class="form-control" type="text" name="lastName" maxlength="150" value="{{ superUser.last_name }}" required="required">
                 <div id="lastName"></div>
               </div>
             </div>
             <div class="col-lg-6">
               <div class="form-group">
-                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Username:</h5>
+                <label class="form-control-label" style="margin-bottom: 10px;">Username:</label>
                 <input class="form-control" type="text" name="username" maxlength="150" value="{{ superUser.username }}" required="required">
                 <div id="username"></div>
               </div>
             </div>
             <div class="col-lg-6">
               <div class="form-group">
-                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Email:</h5>
+                <label class="form-control-label" style="margin-bottom: 10px;">Email:</label>
                 <input class="form-control" type="email" name="email" maxlength="254" value="{{ superUser.email }}" required="required">
                 <div id="email"></div>
               </div>
             </div>
             <div class="col-lg-6">
               <div class="form-group">
-                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Gender:</h5>
+                <label class="form-control-label" style="margin-bottom: 10px;">Gender:</label>
                 <select name="gender" class="form-control" required="required">
                   <option>{{ student.gender }}</option>
                   {% if student.gender == "Male"  %}
@@ -69,14 +69,14 @@
             </div>
             <div class="col-lg-6">
               <div class="form-group">
-                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Date of Birth:</h5>
+                <label class="form-control-label" style="margin-bottom: 10px;">Date of Birth:</label>
                   <input class="form-control" type="date" name="dob" required="required" value="{{ student.dob }}">
                 <div id="dob"></div>
               </div>
             </div>
             <div class="col-lg-6">
               <div class="form-group">
-                <h5 class="modal-title" align="left" style="margin-bottom: 10px;">Phone Number:</h5>
+                <label class="form-control-label" style="margin-bottom: 10px;">Phone Number:</label>
                   <input class="form-control" type="text" name="phoneNo" maxlength="20" value="{{ student.phone_no }}" required="required">
                 <div id="phoneNo"></div>
               </div>

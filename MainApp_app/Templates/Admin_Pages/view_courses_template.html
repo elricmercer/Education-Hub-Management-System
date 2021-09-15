@@ -1,0 +1,259 @@
+{% extends 'Admin_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Courses</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!--HEAD-->
+<div class="header bg-primary pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-1 col-6 text-left">
+            <a href="#ModalAddCourse" data-toggle="modal" class="btn btn-sm btn-neutral">Add</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--ADD COURSE MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddCourse">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Course Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="addCourse" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Course Name:</label>
+                    <input class="form-control" type="text" name="courseName" maxlength="255" placeholder="eg: Computer Science" required="required">
+                    <div id="courseName"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Duration:</label>
+                    <select name="duration" class="form-control" required="required">
+                      <option selected="selected" disabled="disabled">Select</option>
+                      <option>1 Day</option>
+                      {% for day in daysList %}
+                          <option>{{ day }} Days</option>
+                      {% endfor %}
+                    </select>
+                    <div id="duration"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success"></div>
+            <div id="failed"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--TABLE-->
+<div class="container-fluid mt--6">
+  <!-- Dark table -->
+  <div class="row">
+    <div class="col">
+      <div class="card bg-default shadow">
+        <div class="card-header bg-transparent border-0">
+          <h3 class="text-white mb-0">Courses</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-dark table-flush">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Course ID</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Created at</th>
+                <th scope="col">Updated at</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="list">
+            {% for cour in courses %}
+              <tr>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ cour.id }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ cour.name }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ cour.duration }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ cour.created_at }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ cour.updated_at }}</span>
+                </th>
+                <td class="text-right">
+                  <div class="dropdown">
+                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                      <a class="dropdown-item" href="{% url 'admin_edit_course' courID=cour.id %}">Edit</a>
+                      {% if request.user.user_type == "1" %}
+                        <a class="dropdown-item" href="{% url 'admin_delete_course' courID=cour.id %}" onclick="return confirm('Are you sure you want to remove this course')">Delete</a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <nav aria-label="Page navigation">
+            {% if courses.has_other_pages %}
+              <ul class="pagination justify-content-end">
+                {% if courses.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ courses.previous_page_number }}" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for i in courses.paginator.page_range %}
+                  {% if courses.number == i %}
+                    <li class="page-item active"><a class="page-link">{{ i }}<a class="sr-only">(current)</a></a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if courses.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ courses.next_page_number }}">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link" tabindex="-1">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            {% endif %}
+          </nav>
+        </div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+    $(document).ready(function()
+    {
+        $("#addCourse").on("submit", function(event)
+        {
+            event.preventDefault()
+            var addCourseForm = $("#addCourse")
+            console.log("calling ajax")
+
+            $.ajax
+            ({
+                type: "POST",
+                url: "{% url 'admin_add_course_save' %}",
+                data: addCourseForm.serialize(),
+
+                success: function(response)
+                {
+                    console.log(response)
+
+
+                    //COURSE NAME
+                    if(response == "courseName")
+                    {
+                      $("#courseName").html
+                      (
+                        '<p style="color:red"><b>Error! Course with this name already exists</b></p>'
+                      )
+                    }
+                    else
+                    {
+                      $("#courseName").html
+                      (
+                        '<p></p>'
+                      )
+                    }
+
+                    //COURSE ADDED
+                    if(response == "success")
+                    {
+                      $("#success").html
+                      (
+                        '<div class="alert alert-success" style="margin-top: 10px">Added</div>'
+                      )
+                    }
+                    else
+                    {
+                      $("#success").html
+                      (
+                        '<div></div>'
+                      )
+                    }
+
+                    //FAILED TO ADDED
+                    if(response == "failed")
+                    {
+                      $("#failed").html
+                      (
+                        '<div class="alert alert-error" style="margin-top: 10px">Failed! To add</div>'
+                      )
+                    }
+                    else
+                    {
+                      $("#failed").html
+                      (
+                        '<div></div>'
+                      )
+                    }
+                },
+                error: function(response)
+                {
+                    console.log(response)
+                }
+            })
+        })
+    })
+</script>
+{% endblock custom_js %}

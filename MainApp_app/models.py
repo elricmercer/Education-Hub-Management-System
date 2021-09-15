@@ -97,7 +97,7 @@ class AdminNotification(models.Model):
 class Schedule(models.Model):
     id = models.BigAutoField(primary_key=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
+    tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE, null=True, blank=True)
     duration = models.CharField(max_length=20)
     day = models.CharField(max_length=15)
     time = models.CharField(max_length=10)
@@ -216,6 +216,7 @@ class TutorsCertifiedToCourse(models.Model):
 class TutorApplyToCertifyToCourse(models.Model):
     id = models.BigAutoField(primary_key=True)
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
+    admin = models.ForeignKey(Admin, on_delete=models.CASCADE, null=True, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     status = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)

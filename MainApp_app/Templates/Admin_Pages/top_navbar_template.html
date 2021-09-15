@@ -60,6 +60,13 @@
           <li class="nav-item dropdown">
             <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <div class="media align-items-center">
+                <span class="avatar avatar-sm rounded-circle">
+                  {% if request.user.admin.pic == "" %}
+                    <img src="{% static "img/default user/dafault user image.png"%}" type="image/png">
+                  {% else %}
+                    <img src="{{ request.user.admin.pic }}">
+                  {% endif %}
+                </span>
                 <div class="media-body  ml-2  d-none d-lg-block">
                   <span class="mb-0 text-sm  font-weight-bold">{{ request.user.username }}</span>
                 </div>

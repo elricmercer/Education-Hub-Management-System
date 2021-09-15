@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 
 from Education_Hub_Management_System import settings
-from MainApp_app import views, AdminViews
+from MainApp_app import views, AdminViews, SuperUserView
 
 urlpatterns = [
     # COMMON
@@ -27,6 +27,13 @@ urlpatterns = [
     path('login', views.DoLogin, name='login'),
     path('logout', views.DoLogout, name='logout'),
 
+    # SUPER USER
+    path('admin_view_administrators', SuperUserView.ViewAdministrators, name="admin_view_administrators"),
+    path('admin_add_administrators_save', SuperUserView.SaveAddAdmin, name="admin_add_administrators_save"),
+    path('admin_edit_administrators/<str:superID>', SuperUserView.EditAdmin, name="admin_edit_administrators"),
+    path('admin_edit_administrators_save', SuperUserView.SaveEditAdmin, name="admin_edit_administrators_save"),
+    path('admin_delete_administrators/<str:superUserID>', SuperUserView.DeleteAdmin, name="admin_delete_administrators"),
+
     # ADMIN
     path('admin_dashboard', AdminViews.Dashboard, name="admin_dashboard"),
     path('admin_profile', AdminViews.Profile, name="admin_profile"),
@@ -34,11 +41,6 @@ urlpatterns = [
     path('admin_edit_profile_save', AdminViews.SaveEditProfile, name="admin_edit_profile_save"),
     path('admin_profile_pic_save', AdminViews.SaveProfilePic, name="admin_profile_pic_save"),
     path('admin_profile_pic_remove', AdminViews.RemoveProfilePic, name="admin_profile_pic_remove"),
-    path('admin_view_administrators', AdminViews.ViewAdministrators, name="admin_view_administrators"),
-    path('admin_add_administrators_save', AdminViews.SaveAddAdmin, name="admin_add_administrators_save"),
-    path('admin_edit_administrators/<str:superID>', AdminViews.EditAdmin, name="admin_edit_administrators"),
-    path('admin_edit_administrators_save', AdminViews.SaveEditAdmin, name="admin_edit_administrators_save"),
-    path('admin_delete_administrators/<str:superUserID>', AdminViews.DeleteAdmin, name="admin_delete_administrators"),
     path('admin_view_students', AdminViews.ViewStudents, name="admin_view_students"),
     path('admin_add_students_save', AdminViews.SaveAddStudent, name="admin_add_students_save"),
     path('admin_edit_students/<str:superID>', AdminViews.EditStudent, name="admin_edit_students"),
@@ -53,4 +55,19 @@ urlpatterns = [
     path('admin_edit_tutors_save', AdminViews.SaveEditTutor, name="admin_edit_tutors_save"),
     path('admin_search_tutor_payment', AdminViews.SearchTutorPayment, name="admin_search_tutor_payment"),
     path('admin_view_tutor_payment/<str:tutorID>', AdminViews.ViewTutorPayment, name="admin_view_tutor_payment"),
+    path('admin_view_course', AdminViews.ViewCourse, name="admin_view_course"),
+    path('admin_add_course_save', AdminViews.SaveAddCourse, name="admin_add_course_save"),
+    path('admin_delete_course/<str:courID>', AdminViews.DeleteCourse, name="admin_delete_course"),
+    path('admin_edit_course/<str:courID>', AdminViews.EditCourse, name="admin_edit_course"),
+    path('admin_edit_course_save', AdminViews.SaveEditCourse, name="admin_edit_course_save"),
+    path('admin_search_tutor_certification', AdminViews.SearchTutorCertification, name="admin_search_tutor_certification"),
+    path('admin_view_tutor_certifications/<str:tutID>', AdminViews.ViewTutorCertifications, name="admin_view_tutor_certifications"),
+    path('admin_tutor_certification_save', AdminViews.SaveTutorCertification, name="admin_tutor_certification_save"),
+    path('admin_delete_tutor_certification/<str:certID>/<str:tutorID>', AdminViews.DeleteTutorCertification, name="admin_delete_tutor_certification"),
+    path('admin_view_schedules', AdminViews.ViewSchedules, name="admin_view_schedules"),
+    path('admin_schedules_save', AdminViews.SaveAddSchedule, name="admin_schedules_save"),
+    path('admin_delete_schedule/<str:schID>', AdminViews.DeleteSchedule, name="admin_delete_schedule"),
+    path('admin_add_tutor_to_schedule', AdminViews.SaveAddTutorToSchedule, name="admin_add_tutor_to_schedule"),
+    path('admin_edit_schedule/<str:schID>', AdminViews.EditSchedule, name="admin_edit_schedule"),
+    path('admin_edit_schedule_save', AdminViews.SaveEditSchedule, name="admin_edit_schedule_save"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

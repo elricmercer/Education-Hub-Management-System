@@ -1,0 +1,256 @@
+{% extends 'Admin_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Certification</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!--MENU OPTIONS-->
+<div class="header bg-primary pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-1 col-6 text-left">
+          <a href="#ModalCertifyTutor" data-toggle="modal" class="btn btn-sm btn-neutral">Certify</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--CERTIFY TUTOR MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalCertifyTutor">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Certification Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="certifyTutor" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Tutor ID:</label>
+                    <input class="form-control" type="text" name="tutorID" maxlength="150" placeholder="eg: 10" required="required">
+                    <div id="tutorID"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Courses:</label>
+                    <select name="courseID" class="form-control" required="required">
+                        <option disabled="disabled" selected="selected">Select</option>
+                        {% for cour in course %}
+                            <option value="{{ cour.id }}">{{ cour.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="courseID"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success"></div>
+            <div id="failed"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Certify</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--TABLE-->
+<div class="container-fluid mt--6">
+  <!-- Dark table -->
+  <div class="row">
+    <div class="col">
+      <div class="card bg-default shadow">
+        <div class="card-header bg-transparent border-0">
+          <h3 class="text-white mb-0">Courses Certified</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-dark table-flush">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Certification ID</th>
+                <th scope="col">Tutor ID</th>
+                <th scope="col">Tutor Name</th>
+                <th scope="col">Course ID</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Created at</th>
+                <th scope="col">Updated at</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="list">
+            {% for tutCert in tutorCerts %}
+              <tr>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ tutCert.id }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ tutCert.tutor_id }}</span>
+                </th>
+                <th scope="row">
+                  {% ifequal tutCert.tutor_id tutor.id %}
+                    {% ifequal tutor.super_id superUser.id %}
+                        <span class="name mb-0 text-sm">{{ superUser.first_name }} {{ superUser.last_name }}</span>
+                    {% endifequal %}
+                  {% endifequal %}
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ tutCert.course_id }}</span>
+                </th>
+                <th scope="row">
+                  {% for cour in course %}
+                      {% ifequal tutCert.course_id cour.id %}
+                        <span class="name mb-0 text-sm">{{ cour.name }}</span>
+                      {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ tutCert.created_at }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ tutCert.updated_at }}</span>
+                </th>
+                <td class="text-right">
+                  <div class="dropdown">
+                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                        <a class="dropdown-item" href="{% url 'admin_delete_tutor_certification' certID=tutCert.id tutorID=tutCert.tutor_id %}" onclick="return confirm('Are you sure you want to remove this certification')">Delete</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <nav aria-label="Page navigation">
+            {% if tutorCerts.has_other_pages %}
+              <ul class="pagination justify-content-end">
+                {% if tutorCerts.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ tutorCerts.previous_page_number }}" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for i in tutorCerts.paginator.page_range %}
+                  {% if tutorCerts.number == i %}
+                    <li class="page-item active"><a class="page-link">{{ i }}<a class="sr-only">(current)</a></a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if tutorCerts.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ tutorCerts.next_page_number }}">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link" tabindex="-1">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            {% endif %}
+          </nav>
+        </div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+ $(document).ready(function()
+ {
+    $("#certifyTutor").on("submit", function(event)
+    {
+        event.preventDefault()
+        var certifyTutorForm = $("#certifyTutor")
+        console.log("calling ajax")
+
+        $.ajax
+        ({
+            type: "POST",
+            url: "{% url 'admin_tutor_certification_save' %}",
+            data: certifyTutorForm.serialize(),
+
+            success: function(response)
+            {
+                console.log(response)
+
+                //TUTOR ID
+                if(response == "tutorID")
+                {
+                  $("#tutorID").html
+                  (
+                    '<p style="color:red"><b>Error! Tutor ID does not exist</b></p>'
+                  )
+                }
+                else
+                {
+                  $("#tutorID").html
+                  (
+                    '<p></p>'
+                  )
+                }
+
+                //CERTIFIED
+                if(response == "success")
+                {
+                  $("#success").html
+                  (
+                    '<div class="alert alert-success" style="margin-top: 10px">Certified</div>'
+                  )
+                }
+
+                //FAILED
+                if(response == "failed")
+                {
+                  $("#failed").html
+                  (
+                    '<div class="alert alert-success" style="margin-top: 10px">Failed! To certify</div>'
+                  )
+                }
+            },
+            error: function(response)
+            {
+                console.log(response)
+            }
+        })
+    })
+ })
+</script>
+{% endblock custom_js %}

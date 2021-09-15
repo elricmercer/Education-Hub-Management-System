@@ -30,16 +30,21 @@
     {% url 'admin_view_tutors' as admin_view_tutors %}
     {% url 'admin_edit_tutors' superID=id as admin_edit_tutors %}
     {% url 'admin_view_tutor_payment' tutorID=id as admin_view_tutor_payment %}
+    {% url 'admin_view_tutor_certifications' tutID=id as admin_view_tutor_certifications %}
     <li class="nav-item">
       <a class="nav-link {% if request.path == admin_view_tutors %} active {% endif %}
         {% if request.path == admin_edit_tutors %} active {% endif %}
-        {% if request.path == admin_view_tutor_payment %} active {% endif %}" href="{{ admin_view_tutors }}">
+        {% if request.path == admin_view_tutor_payment %} active {% endif %}
+        {% if request.path == admin_view_tutor_certifications %} active {% endif %}" href="{{ admin_view_tutors }}">
         <i class="ni ni-single-02 text-default"></i>
         <span class="nav-link-text">Tutors</span>
       </a>
     </li>
+    {% url 'admin_view_schedules' as admin_view_schedules %}
+    {% url 'admin_edit_schedule' schID=id as admin_edit_schedule %}
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link {% if request.path == admin_view_schedules %} active {% endif %}
+        {% if request.path == admin_edit_schedule %} active {% endif %}" href="{{ admin_view_schedules }}">
         <i class="ni ni-bullet-list-67 text-red"></i>
         <span class="nav-link-text">Schedules</span>
       </a>
@@ -50,8 +55,11 @@
         <span class="nav-link-text">Classes</span>
       </a>
     </li>
+    {% url 'admin_view_course' as admin_view_course %}
+    {% url 'admin_edit_course' courID=id as admin_edit_course %}
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link {% if request.path == admin_view_course %} active {% endif %}
+        {% if request.path == admin_edit_course %} active {% endif %}" href="{{ admin_view_course }}">
         <i class="ni ni-paper-diploma text-info"></i>
         <span class="nav-link-text">Courses</span>
       </a>

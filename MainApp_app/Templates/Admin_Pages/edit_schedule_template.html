@@ -1,0 +1,158 @@
+{% extends 'Admin_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Edit Schedule</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<div class="col-xl-8 order-xl-1">
+  <div class="card" style="left: 110px; top: 10px;">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h3 class="mb-0">Schedule ID : {{ schedule.id }} </h3>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form id="editSchedule" role="form">
+        {% csrf_token %}
+        <input type="hidden" name="scheduleID" value="{{ schedule.id }}">
+        <div class="pl-lg-4">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Duration:</label>
+                <select name="duration" class="form-control" required="required">
+                  <option selected="selected">{{ schedule.duration }}</option>
+                  <option disabled="disabled">-----------------------</option>
+                  <option>30 mins</option>
+                  <option>45 mins</option>
+                  <option>1 hr</option>
+                  <option>1 hr 30 mins</option>
+                  <option>1 hr 45 mins</option>
+                  <option>2 hrs</option>
+                  <option>2 hrs 30 mins</option>
+                  <option>2hrs 45 mins</option>
+                  <option>3 hrs</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Day:</label>
+                <select name="day" class="form-control" required="required">
+                  <option selected="selected">{{ schedule.day }}</option>
+                  <option disabled="disabled">---------------------</option>
+                  <option>Monday</option>
+                  <option>Tuesday</option>
+                  <option>Wednesday</option>
+                  <option>Thursday</option>
+                  <option>Friday</option>
+                  <option>Saturday</option>
+                  <option>Sunday</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" required="required" name="time" value="{{ schedule.time }}">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Status:</label>
+                <select name="status" class="form-control" required="required">
+                  <option selected="selected">{{ schedule.status }}</option>
+                  <option disabled="disabled">-------------</option>
+                  <option>Active</option>
+                  <option>Inactive</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="success"></div>
+        <div id="failed"></div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Edit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+    $(document).ready(function()
+    {
+        $("#editSchedule").on("submit", function(event)
+        {
+            event.preventDefault()
+            var editScheduleForm = $("#editSchedule")
+            console.log("calling ajax")
+
+            $.ajax
+            ({
+                type: "POST",
+                url: "{% url 'admin_edit_schedule_save' %}",
+                data: editScheduleForm.serialize(),
+
+                success: function(response)
+                {
+                    console.log(response)
+
+                    //SCHEDULE EDITED
+                    if(response == "success")
+                    {
+                      $("#success").html
+                      (
+                        '<div class="alert alert-success" style="margin-top: 10px">Edited</div>'
+                      )
+                    }
+                    else
+                    {
+                      $("#success").html
+                      (
+                        '<div></div>'
+                      )
+                    }
+
+                    //FAILED
+                    if(response == "failed")
+                    {
+                      $("#failed").html
+                      (
+                        '<div class="alert alert-error" style="margin-top: 10px">Failed! To edit</div>'
+                      )
+                    }
+                    else
+                    {
+                      $("#failed").html
+                      (
+                        '<div></div>'
+                      )
+                    }
+                },
+                error: function(response)
+                {
+                    console.log(response)
+                }
+            })
+        })
+    })
+</script>
+{% endblock custom_js %}

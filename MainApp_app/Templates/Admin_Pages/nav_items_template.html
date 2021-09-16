@@ -49,8 +49,9 @@
         <span class="nav-link-text">Schedules</span>
       </a>
     </li>
+    {% url 'admin_view_classes' as admin_view_classes %}
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link {% if request.path == admin_view_classes %} active {% endif %}" href="{{ admin_view_classes }}">
         <i class="ni ni-books text-primary"></i>
         <span class="nav-link-text">Classes</span>
       </a>

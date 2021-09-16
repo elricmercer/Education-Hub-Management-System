@@ -109,16 +109,12 @@ class Schedule(models.Model):
 
 class Enrollment(models.Model):
     id = models.BigAutoField(primary_key=True)
-    tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
+    tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE, blank=True, null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     start_date = models.CharField(max_length=15)
     end_date = models.CharField(max_length=15)
     status = models.CharField(max_length=10)
     link = models.TextField(blank=True, null=True)
-    modal_add_student = models.CharField(max_length=255, blank=True, null=True)
-    modal_remove_student = models.CharField(max_length=255, blank=True, null=True)
-    modal_add_tutor = models.CharField(max_length=255, blank=True, null=True)
-    modal_add_link = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
@@ -154,7 +150,7 @@ class EnrollmentTime(models.Model):
 
 class EnrolledStudents(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()

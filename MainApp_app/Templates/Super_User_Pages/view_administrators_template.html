@@ -293,14 +293,14 @@
     $("#addAdmin").on("submit", function(event)
     {
       event.preventDefault()
-      var addAdminform = $("#addAdmin")
+      var addAdminForm = $("#addAdmin")
       console.log("calling ajax")
 
       $.ajax
       ({
         type: "POST",
         url: "{% url 'admin_add_administrators_save' %}",
-        data: addAdminform.serialize(),
+        data: addAdminForm.serialize(),
 
         success: function(response)
         {

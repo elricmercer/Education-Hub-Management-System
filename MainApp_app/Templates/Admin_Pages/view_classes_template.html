@@ -1,0 +1,1402 @@
+{% extends 'Admin_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Classes</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!--HEAD-->
+<div class="header bg-primary pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-11 col-6 text-left">
+            <a href="#ModalAddClass" data-toggle="modal" class="btn btn-sm btn-neutral">Add Class</a>
+            <a href="#ModalAddStudentsToClass" data-toggle="modal" class="btn btn-sm btn-neutral">Add Students To Class</a>
+            <a href="#ModalAddTutorToClass" data-toggle="modal" class="btn btn-sm btn-neutral">Add Tutor To Class</a>
+            <a href="#ModalRemoveStudentsFromClass" data-toggle="modal" class="btn btn-sm btn-neutral">Remove Students From Class</a>
+            <a href="#ModalRemoveTutorFromClass" data-toggle="modal" class="btn btn-sm btn-neutral">Remove Tutor From Class</a>
+            <a href="#ModalAddClassRoomLink" data-toggle="modal" class="btn btn-sm btn-neutral">Add Class Room Link</a>
+            <a href="#ModalRemoveClassRoomLink" data-toggle="modal" class="btn btn-sm btn-neutral">Remove Class Room Link</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--ADD CLASS MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddClass">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Class Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="addClass" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Course:</label>
+                    <select name="courseID" class="form-control" required="required">
+                        <option selected="selected" disabled="disabled">Select</option>
+                        {% for cour in course %}
+                            <option value="{{ cour.id }}">{{ cour.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="courseID"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Start Date:</label>
+                    <input type="date" class="form-control" required="required" name="startDate">
+                    <div id="startDate"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">End Date:</label>
+                    <input type="date" class="form-control" required="required" name="endDate">
+                    <div id="endDate"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Status:</label>
+                    <select name="status" class="form-control" required="required">
+                      <option selected="selected" disabled="disabled">Select</option>
+                      <option>Active</option>
+                      <option>Inactive</option>
+                    </select>
+                    <div id="status"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr class="my-4" />
+            <h6 class="heading-small text-muted mb-4">Setup Days & Time</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <!--                MONDAY-->
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Monday:</label>
+                    <select name="monday" class="form-control">
+                        <option selected="selected">No</option>
+                        <option>Yes</option>
+                    </select>
+                    <div id="monday"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                    <input type="time" class="form-control" name="mondayTime">
+                    <div id="mondayTime"></div>
+                  </div>
+                </div>
+                <!--                TUESDAY-->
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Tuesday:</label>
+                    <select name="tuesday" class="form-control">
+                        <option selected="selected">No</option>
+                        <option>Yes</option>
+                    </select>
+                    <div id="tuesday"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                    <input type="time" class="form-control" name="tuesdayTime">
+                    <div id="tuesdayTime"></div>
+                  </div>
+                </div>
+                <!--                WEDNESDAY-->
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Wednesday:</label>
+                    <select name="wednesday" class="form-control">
+                        <option selected="selected">No</option>
+                        <option>Yes</option>
+                    </select>
+                    <div id="wednesday"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                    <input type="time" class="form-control" name="wednesdayTime">
+                    <div id="wednesdayTime"></div>
+                  </div>
+                </div>
+                <!--                THURSDAY-->
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Thursday:</label>
+                    <select name="thursday" class="form-control">
+                        <option selected="selected">No</option>
+                        <option>Yes</option>
+                    </select>
+                    <div id="thursday"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                    <input type="time" class="form-control" name="thursdayTime">
+                    <div id="thursdayTime"></div>
+                  </div>
+                </div>
+                <!--                FRIDAY-->
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Friday:</label>
+                    <select name="friday" class="form-control">
+                        <option selected="selected">No</option>
+                        <option>Yes</option>
+                    </select>
+                    <div id="friday"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                    <input type="time" class="form-control" name="fridayTime">
+                    <div id="fridayTime"></div>
+                  </div>
+                </div>
+                <!--                SATURDAY-->
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Saturday:</label>
+                    <select name="saturday" class="form-control">
+                        <option selected="selected">No</option>
+                        <option>Yes</option>
+                    </select>
+                    <div id="saturday"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                    <input type="time" class="form-control" name="saturdayTime">
+                    <div id="saturdayTime"></div>
+                  </div>
+                </div>
+                <!--                SUNDAY-->
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Sunday:</label>
+                    <select name="sunday" class="form-control">
+                        <option selected="selected">No</option>
+                        <option>Yes</option>
+                    </select>
+                    <div id="sunday"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                    <input type="time" class="form-control" name="sundayTime">
+                    <div id="sundayTime"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success"></div>
+            <div id="failed"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--ADD STUDENTS MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddStudentsToClass">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Student to Class Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="addStudentsToClass" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
+                    <input name="enrollID" type="text" required="required" maxlength="20" placeholder="eg: 10" class="form-control">
+                    <div id="enrollID"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Student ID:</label>
+                    <input type="text" class="form-control" required="required" name="studentID" maxlength="20" placeholder="eg: 10">
+                    <div id="studentID"></div>
+                    <div id="studentID2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success2"></div>
+            <div id="failed2"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--ADD TUTOR MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddTutorToClass">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Tutor to Class Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="addTutorToClass" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
+                    <input name="enrollID" type="text" required="required" maxlength="20" placeholder="eg: 10" class="form-control">
+                    <div id="enrollID2"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Tutor ID:</label>
+                    <input type="text" class="form-control" required="required" name="tutorID" maxlength="20" placeholder="eg: 10">
+                    <div id="tutorID"></div>
+                    <div id="tutorID2"></div>
+                    <div id="tutorID3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success3"></div>
+            <div id="failed3"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--REMOVE STUDENTS MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalRemoveStudentsFromClass">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Remove Students From Class Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="removeStudentsFromClass" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
+                    <input name="enrollID" type="text" required="required" maxlength="20" placeholder="eg: 10" class="form-control">
+                    <div id="enrollID3"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Student ID:</label>
+                    <input type="text" class="form-control" required="required" name="studentID" maxlength="20" placeholder="eg: 10">
+                    <div id="studentID3"></div>
+                    <div id="studentID4"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success4"></div>
+            <div id="failed4"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Remove</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--REMOVE TUTOR MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalRemoveTutorFromClass">
+  <div class="modal-dialog modal-dialog-centered modal">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Remove Tutor From Class Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="removeTutorFromClass" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
+                    <input name="enrollID" type="text" required="required" maxlength="20" placeholder="eg: 10" class="form-control">
+                    <div id="enrollID4"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success5"></div>
+            <div id="failed5"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Remove</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--ADD CLASSROOM LINK MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddClassRoomLink">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Class Room Link Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="addClassRoomLink" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
+                    <input name="enrollID" type="text" required="required" maxlength="20" placeholder="eg: 10" class="form-control">
+                    <div id="enrollID5"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Link:</label>
+                    <input name="link" type="text" required="required" placeholder="eg: https://zoom.us/j/5551112222" class="form-control">
+                    <div id="link"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success6"></div>
+            <div id="failed6"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--REMOVE CLASSROOM LINK MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalRemoveClassRoomLink">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Remove Class Room Link Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="removeClassRoomLink" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
+                    <input name="enrollID" type="text" required="required" maxlength="20" placeholder="eg: 10" class="form-control">
+                    <div id="enrollID6"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success7"></div>
+            <div id="failed7"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Remove</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--TABLE-->
+<div class="container-fluid mt--6">
+  <!-- Dark table -->
+  <div class="row">
+    <div class="col">
+      <div class="card bg-default shadow">
+        <div class="card-header bg-transparent border-0">
+          <h3 class="text-white mb-0">Classes</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-dark table-flush">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Class ID</th>
+                <th scope="col">Student ID</th>
+                <th scope="col">Student Name</th>
+                <th scope="col">Tutor ID</th>
+                <th scope="col">Tutor Name</th>
+                <th scope="col">Course ID</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+                <th scope="col">Days and Time</th>
+                <th scope="col">Status</th>
+                <th scope="col">Class Room Link</th>
+                <th scope="col">Created at</th>
+                <th scope="col">Updated at</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="list">
+            {% for enroll in enrollments %}
+              <tr>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.id }}</span>
+                </th>
+                <th scope="row">
+                  {% for enrollStuds in enrollmentStudents %}
+                    {% ifequal enroll.id enrollStuds.enrollment_id %}
+                      <span class="name mb-0 text-sm">{{ enrollStuds.student_id }}<br></span>
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  {% for enrollStuds in enrollmentStudents %}
+                    {% ifequal enroll.id enrollStuds.enrollment_id %}
+                      {% for stud in student %}
+                        {% ifequal enrollStuds.student_id stud.id %}
+                          {% for sup in superUser %}
+                            {% ifequal stud.super_id sup.id  %}
+                              <span class="name mb-0 text-sm">{{ sup.first_name }} {{ sup.last_name }}<br></span>
+                            {% endifequal %}
+                          {% endfor %}
+                        {% endifequal %}
+                      {% endfor %}
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.tutor_id }}</span>
+                </th>
+                <th scope="row">
+                  {% for tut in tutor %}
+                    {% ifequal enroll.tutor_id tut.id %}
+                      {% for sup in superUser %}
+                        {% ifequal tut.super_id sup.id %}
+                          <span class="name mb-0 text-sm">{{ sup.first_name }} {{ sup.last_name }}</span>
+                        {% endifequal %}
+                      {% endfor %}
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.course_id }}</span>
+                </th>
+                <th scope="row">
+                  {% for cour in course %}
+                    {% ifequal enroll.course_id cour.id %}
+                      <span class="name mb-0 text-sm">{{ cour.name }}</span>
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.start_date }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.end_date }}</span>
+                </th>
+                <th scope="row">
+                  {% for days in enrollmentDays %}
+                    {% ifequal enroll.id days.enrollment_id %}
+                      {% for time in enrollmentTime %}
+                        {% ifequal days.enrollment_id time.enrollment_id %}
+                          <span class="name mb-0 text-sm">
+                            {% if days.monday == "Yes" %}
+                              Monday: {{ time.monday|slice:"0:5" }}<br>
+                            {% endif %}
+                            {% if days.tuesday == "Yes" %}
+                              Tuesday: {{ time.tuesday|slice:"0:5" }}<br>
+                            {% endif %}
+                            {% if days.wednesday == "Yes" %}
+                              Wednesday: {{ time.wednesday|slice:"0:5" }}<br>
+                            {% endif %}
+                            {% if days.thursday == "Yes" %}
+                              Thursday: {{ time.thursday|slice:"0:5" }}<br>
+                            {% endif %}
+                            {% if days.friday == "Yes" %}
+                              Friday: {{ time.friday|slice:"0:5" }}<br>
+                            {% endif %}
+                            {% if days.saturday == "Yes" %}
+                              Saturday: {{ time.saturday|slice:"0:5" }}<br>
+                            {% endif %}
+                            {% if days.sunday == "Yes" %}
+                              Sunday: {{ time.sunday|slice:"0:5" }}<br>
+                            {% endif %}
+                          </span>
+                        {% endifequal %}
+                      {% endfor %}
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.status }}</span>
+                </th>
+                <th scope="row">
+                  {% if enroll.link == None or enroll.link == "" %}
+                    <span class="name mb-0 text-sm">Not available</span>
+                  {% else %}
+                    <span class="name mb-0 text-sm">Available</span>
+                  {% endif %}
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.created_at }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ enroll.updated_at }}</span>
+                </th>
+                <td class="text-right">
+                  <div class="dropdown">
+                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                      <a class="dropdown-item" href="{% url 'admin_edit_class' enrollID=enroll.id %}">Edit</a>
+                      <a class="dropdown-item" href="{% url 'admin_delete_class' enrollID=enroll.id %}" onclick="return confirm('Are you sure you want to remove this class')">Delete</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <nav aria-label="Page navigation">
+            {% if enrollments.has_other_pages %}
+              <ul class="pagination justify-content-end">
+                {% if enrollments.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ enrollments.previous_page_number }}" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for i in enrollments.paginator.page_range %}
+                  {% if enrollments.number == i %}
+                    <li class="page-item active"><a class="page-link">{{ i }}<a class="sr-only">(current)</a></a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if enrollments.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ enrollments.next_page_number }}">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link" tabindex="-1">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            {% endif %}
+          </nav>
+        </div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+    //ADD CLASS--------------------------------------------------------------------------------------------------------------------
+    $("#addClass").on("submit", function(event)
+    {
+      event.preventDefault()
+      var addClassForm = $("#addClass")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_add_classes_save' %}",
+        data: addClassForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //MONDAY
+          if(response=="mondayTime")
+          {
+            $("#mondayTime").html
+            (
+              '<p style="color:red"><b>Error! Set time</b></p>'
+            )
+          }
+          else
+          {
+            $("#mondayTime").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //TUESDAY
+          if(response=="tuesdayTime")
+          {
+            $("#tuesdayTime").html
+            (
+              '<p style="color:red"><b>Error! Set time</b></p>'
+            )
+          }
+          else
+          {
+            $("#tuesdayTime").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //WEDNESDAY
+          if(response=="wednesdayTime")
+          {
+            $("#wednesdayTime").html
+            (
+              '<p style="color:red"><b>Error! Set time</b></p>'
+            )
+          }
+          else
+          {
+            $("#wednesdayTime").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //THURSDAY
+          if(response=="thursdayTime")
+          {
+            $("#thursdayTime").html
+            (
+              '<p style="color:red"><b>Error! Set time</b></p>'
+            )
+          }
+          else
+          {
+            $("#thursdayTime").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //FRIDAY
+          if(response=="fridayTime")
+          {
+            $("#fridayTime").html
+            (
+              '<p style="color:red"><b>Error! Set time</b></p>'
+            )
+          }
+          else
+          {
+            $("#fridayTime").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //SATURDAY
+          if(response=="saturdayTime")
+          {
+            $("#saturdayTime").html
+            (
+              '<p style="color:red"><b>Error! Set time</b></p>'
+            )
+          }
+          else
+          {
+            $("#saturdayTime").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //SUNDAY
+          if(response=="sundayTime")
+          {
+            $("#sundayTime").html
+            (
+              '<p style="color:red"><b>Error! Set time</b></p>'
+            )
+          }
+          else
+          {
+            $("#sundayTime").html
+            (
+              '<p></p>'
+            )
+          }
+
+          // START DATE & END DATE
+          if(response=="startDate")
+          {
+            $("#startDate").html
+            (
+              '<p style="color:red"><b>Error! Start date cannot exceed end date</b></p>'
+            )
+          }
+          else
+          {
+            $("#startDate").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //CLASS ADDED
+          if(response=="success")
+          {
+            $("#success").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Added</div>'
+            )
+          }
+          else
+          {
+            $("#success").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To add</div>'
+            )
+          }
+          else
+          {
+            $("#failed").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+
+    //ADD STUDENT TO CLASS---------------------------------------------------------------------------------------------------------
+    $("#addStudentsToClass").on("submit", function(event)
+    {
+      event.preventDefault()
+      var addStudentsToClassForm = $("#addStudentsToClass")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_add_students_to_class_save' %}",
+        data: addStudentsToClassForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //STUDENT ID
+          if(response=="studentID")
+          {
+            $("#studentID").html
+            (
+              '<p style="color:red"><b>Error! Student ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#studentID").html
+            (
+              '<p></p>'
+            )
+          }
+
+          if(response=="studentIDEnrolled")
+          {
+            $("#studentID2").html
+            (
+              '<p style="color:red"><b>Error! Student already enrolled in class</b></p>'
+            )
+          }
+          else
+          {
+            $("#studentID2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //CLASS ID
+          if(response=="enrollID")
+          {
+            $("#enrollID").html
+            (
+              '<p style="color:red"><b>Error! Class ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#enrollID").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //STUDENT ADDED TO CLASS
+          if(response=="success")
+          {
+            $("#success2").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Added</div>'
+            )
+          }
+          else
+          {
+            $("#success2").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed2").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To add</div>'
+            )
+          }
+          else
+          {
+            $("#failed2").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+
+    //ADD TUTOR TO CLASS-----------------------------------------------------------------------------------------------------------
+    $("#addTutorToClass").on("submit", function(event)
+    {
+      event.preventDefault()
+      var addTutorToClassForm = $("#addTutorToClass")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_add_tutor_to_class_save' %}",
+        data: addTutorToClassForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //CLASS ID
+          if(response=="enrollID")
+          {
+            $("#enrollID2").html
+            (
+              '<p style="color:red"><b>Error! Class ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#enrollID2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //TUTOR ID
+          if(response=="tutorID")
+          {
+            $("#tutorID").html
+            (
+              '<p style="color:red"><b>Error! Tutor ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#tutorID").html
+            (
+              '<p></p>'
+            )
+          }
+
+          if(response=="tutorAlreadyInClass")
+          {
+            $("#tutorID2").html
+            (
+              '<p style="color:red"><b>Error! Tutor already in this class</b></p>'
+            )
+          }
+          else
+          {
+            $("#tutorID2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          if(response=="tutorNotQualified")
+          {
+            $("#tutorID3").html
+            (
+              '<p style="color:red"><b>Error! Tutor not qualified to teach course</b></p>'
+            )
+          }
+          else
+          {
+            $("#tutorID3").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //TUTOR ADDED
+          if(response=="success")
+          {
+            $("#success3").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Added</div>'
+            )
+          }
+          else
+          {
+            $("#success3").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed3").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To add</div>'
+            )
+          }
+          else
+          {
+            $("#failed3").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+
+    //REMOVE STUDENT FROM CLASS----------------------------------------------------------------------------------------------------
+    $("#removeStudentsFromClass").on("submit", function(event)
+    {
+      event.preventDefault()
+      var removeStudentsFromClassForm = $("#removeStudentsFromClass")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_remove_student_from_class' %}",
+        data: removeStudentsFromClassForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //CLASS ID
+          if(response=="enrollID")
+          {
+            $("#enrollID3").html
+            (
+              '<p style="color:red"><b>Error! Class ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#enrollID3").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //STUDENT ID
+          if(response=="studentID")
+          {
+            $("#studentID3").html
+            (
+              '<p style="color:red"><b>Error! Student ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#studentID3").html
+            (
+              '<p></p>'
+            )
+          }
+
+          if(response=="studentNotInClass")
+          {
+            $("#studentID4").html
+            (
+              '<p style="color:red"><b>Error! Student cannot be found</b></p>'
+            )
+          }
+          else
+          {
+            $("#studentID4").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //STUDENT REMOVED
+          if(response=="success")
+          {
+            $("#success4").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Removed</div>'
+            )
+          }
+          else
+          {
+            $("#success4").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed4").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To remove</div>'
+            )
+          }
+          else
+          {
+            $("#failed4").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+
+    //REMOVE TUTOR FROM CLASS------------------------------------------------------------------------------------------------------
+    $("#removeTutorFromClass").on("submit", function(event)
+    {
+      event.preventDefault()
+      var removeTutorFromClassForm = $("#removeTutorFromClass")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_remove_tutor_from_class' %}",
+        data: removeTutorFromClassForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //CLASS ID
+          if(response=="enrollID")
+          {
+            $("#enrollID4").html
+            (
+              '<p style="color:red"><b>Error! Class ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#enrollID4").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //TUTOR REMOVED
+          if(response=="success")
+          {
+            $("#success5").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Removed</div>'
+            )
+          }
+          else
+          {
+            $("#success5").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed5").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To remove</div>'
+            )
+          }
+          else
+          {
+            $("#failed5").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+
+    //ADD LINK TO CLASS------------------------------------------------------------------------------------------------------------
+    $("#addClassRoomLink").on("submit", function(event)
+    {
+      event.preventDefault()
+      var addClassRoomLinkForm = $("#addClassRoomLink")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_add_link_for_class_save' %}",
+        data: addClassRoomLinkForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //CLASS ID
+          if(response=="enrollID")
+          {
+            $("#enrollID5").html
+            (
+              '<p style="color:red"><b>Error! Class ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#enrollID5").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //LINK
+          if(response=="link")
+          {
+            $("#link").html
+            (
+              '<p style="color:red"><b>Error! Incorrect link</b></p>'
+            )
+          }
+          else
+          {
+            $("#link").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //LINK ADDED
+          if(response=="success")
+          {
+            $("#success6").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Added</div>'
+            )
+          }
+          else
+          {
+            $("#success6").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed6").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To add</div>'
+            )
+          }
+          else
+          {
+            $("#failed6").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+
+    //REMOVE CLASS ROOM LINK-------------------------------------------------------------------------------------------------------
+    $("#removeClassRoomLink").on("submit", function(event)
+    {
+      event.preventDefault()
+      var removeClassRoomLinkForm = $("#removeClassRoomLink")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_remove_link_for_class' %}",
+        data: removeClassRoomLinkForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //CLASS ID
+          if(response=="enrollID")
+          {
+            $("#enrollID6").html
+            (
+              '<p style="color:red"><b>Error! Class ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#enrollID6").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //LINK REMOVED
+          if(response=="success")
+          {
+            $("#success7").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Removed</div>'
+            )
+          }
+          else
+          {
+            $("#success7").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed7").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To remove</div>'
+            )
+          }
+          else
+          {
+            $("#failed7").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+  })
+</script>
+{% endblock custom_js %}

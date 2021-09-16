@@ -125,6 +125,7 @@
                     <label class="form-control-label" style="margin-bottom: 10px;">Tutor ID:</label>
                     <input name="tutorID" type="text" class="form-control" required="required" placeholder="eg: 10" maxlength="150">
                     <div id="tutorID"></div>
+                    <div id="tutorID2"></div>
                   </div>
                 </div>
               </div>
@@ -403,14 +404,14 @@
           //TUTOR QUALIFICATION
           if (response == "notQualified")
           {
-            $("#tutorID").html
+            $("#tutorID2").html
             (
               '<p style="color:red"><b>Error! Tutor not certified</b></p>'
             )
           }
           else
           {
-            $("#tutorID").html
+            $("#tutorID2").html
             (
               '<p></p>'
             )

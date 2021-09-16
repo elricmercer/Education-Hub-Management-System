@@ -5,8 +5,10 @@ import random
 import string
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.validators import URLValidator
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -14,7 +16,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from Education_Hub_Management_System.settings import BASE_DIR
 from MainApp_app.models import Admin, SuperUser, Student, StudentPayment, Tutor, TutorEarnings, Course, \
-    TutorsCertifiedToCourse, TutorApplyToCertifyToCourse, Schedule
+    TutorsCertifiedToCourse, TutorApplyToCertifyToCourse, Schedule, Enrollment, EnrolledStudents, EnrollmentDays, \
+    EnrollmentTime
 
 
 # DASHBOARD SECTION
@@ -800,7 +803,7 @@ def SaveEditCourse(request):
 # END OF COURSE SECTION
 
 
-# SCHEDULE SECTION
+# SCHEDULE SECTION(order by not added, add later)
 def ViewSchedules(request):
     course = Course.objects.all()
     schedule = Schedule.objects.all()
@@ -934,9 +937,395 @@ def SaveEditSchedule(request):
         else:
             messages.error(request, "Failed! to edit")
             return HttpResponseRedirect(reverse("admin_view_schedules"))
+
+
 # END OF SCHEDULE SECTION
 
 
 # CLASSES SECTION
+def ViewClasses(request):
+    enrollment = Enrollment.objects.all().order_by("-created_at")
+    enrollmentStudents = EnrolledStudents.objects.all()
+    enrollmentDays = EnrollmentDays.objects.all()
+    enrollmentTime = EnrollmentTime.objects.all()
+    student = Student.objects.all()
+    tutor = Tutor.objects.all()
+    superUser = SuperUser.objects.all()
+    course = Course.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(enrollment, 6)
 
+    try:
+        enrollments = paginator.page(page)
+    except PageNotAnInteger:
+        enrollments = Paginator.page(1)
+    except EmptyPage:
+        enrollments = paginator.page(paginator.num_pages)
+
+    context = {"enrollments": enrollments, "enrollmentStudents": enrollmentStudents, "enrollmentDays": enrollmentDays,
+               "enrollmentTime": enrollmentTime, "student": student, "tutor": tutor, "superUser": superUser,
+               "course": course}
+    return render(request, "Admin_Pages/view_classes_template.html", context)
+
+
+def SaveAddClasses(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            courseID = request.POST.get("courseID")
+            startDate = request.POST.get("startDate")
+            endDate = request.POST.get("endDate")
+            status = request.POST.get("status")
+            monday = request.POST.get("monday")
+            mondayTime = request.POST.get("mondayTime")
+            tuesday = request.POST.get("tuesday")
+            tuesdayTime = request.POST.get("tuesdayTime")
+            wednesday = request.POST.get("wednesday")
+            wednesdayTime = request.POST.get("wednesdayTime")
+            thursday = request.POST.get("thursday")
+            thursdayTime = request.POST.get("thursdayTime")
+            friday = request.POST.get("friday")
+            fridayTime = request.POST.get("fridayTime")
+            saturday = request.POST.get("saturday")
+            saturdayTime = request.POST.get("saturdayTime")
+            sunday = request.POST.get("sunday")
+            sundayTime = request.POST.get("sundayTime")
+
+            # MONDAY
+            if monday == "Yes":
+                if mondayTime is None or mondayTime == "":
+                    return HttpResponse("mondayTime")
+            else:
+                mondayTime = "00:00"
+
+            # TUESDAY
+            if tuesday == "Yes":
+                if tuesdayTime is None or tuesdayTime == "":
+                    return HttpResponse("tuesdayTime")
+            else:
+                tuesdayTime = "00:00"
+
+            # WEDNESDAY
+            if wednesday == "Yes":
+                if wednesdayTime is None or wednesdayTime == "":
+                    return HttpResponse("wednesdayTime")
+            else:
+                wednesdayTime = "00:00"
+
+            # THURSDAY
+            if thursday == "Yes":
+                if thursdayTime is None or thursdayTime == "":
+                    return HttpResponse("thursdayTime")
+            else:
+                thursdayTime = "00:00"
+
+            # FRIDAY
+            if friday == "Yes":
+                if fridayTime is None or fridayTime == "":
+                    return HttpResponse("fridayTime")
+            else:
+                fridayTime = "00:00"
+
+            # SATURDAY
+            if saturday == "Yes":
+                if saturdayTime is None or saturdayTime == "":
+                    return HttpResponse("saturdayTime")
+            else:
+                saturdayTime = "00:00"
+
+            # SUNDAY
+            if sunday == "Yes":
+                if sundayTime is None or sundayTime == "":
+                    return HttpResponse("sundayTime")
+            else:
+                sundayTime = "00:00"
+
+            # START DATE & END DATE
+            d1 = startDate
+            d2 = endDate
+            date = d1.split('-')
+            d1 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]))  # 0 is y, 1 is m, 2 is d
+            date = d2.split('-')
+            d2 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]))
+            if d1 > d2:
+                return HttpResponse("startDate")
+
+            try:
+                enrollment = Enrollment(start_date=startDate, end_date=endDate, status=status, course_id=courseID)
+                enrollment.save()
+                enrollmentDays = EnrollmentDays(monday=monday, tuesday=tuesday, wednesday=wednesday, thursday=thursday,
+                                                friday=friday, saturday=saturday, sunday=sunday,
+                                                enrollment_id=enrollment.id)
+                enrollmentDays.save()
+                enrollmentTime = EnrollmentTime(monday=mondayTime, tuesday=tuesdayTime, wednesday=wednesdayTime,
+                                                thursday=thursdayTime, friday=fridayTime, saturday=saturdayTime,
+                                                sunday=sundayTime, enrollment_id=enrollment.id)
+                enrollmentTime.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add class")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
+def SaveAddStudentsToClass(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            studentID = request.POST.get("studentID")
+            studentCheck = Student.objects.all()
+            enrollCheck = Enrollment.objects.all()
+            enrollStud = EnrolledStudents.objects.all()
+            existsStud = False
+            existsStudInEnroll = False
+            existsEnroll = False
+
+            for stud in studentCheck:
+                if studentID == str(stud.id):
+                    existsStud = True
+                    break
+
+            if not existsStud:
+                return HttpResponse("studentID")
+
+            for studEnroll in enrollStud:
+                if enrollID == str(studEnroll.enrollment_id):
+                    if studentID == str(studEnroll.student_id):
+                        existsStudInEnroll = True
+                        break
+
+            if existsStudInEnroll:
+                return HttpResponse("studentIDEnrolled")
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    existsEnroll = True
+                    break
+
+            if not existsEnroll:
+                return HttpResponse("enrollID")
+
+            try:
+                enrollStudent = EnrolledStudents(enrollment_id=enrollID, student_id=studentID)
+                enrollStudent.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
+def SaveAddTutorToClass(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            tutorID = request.POST.get("tutorID")
+            enrollCheck = Enrollment.objects.all()
+            tutorCheck = Tutor.objects.all()
+            qualified = TutorsCertifiedToCourse.objects.all()
+            existsEnroll = False
+            existsTutor = False
+            tutorQualified = False
+            tutorAlreadyInClass = False
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    existsEnroll = True
+                    break
+
+            if not existsEnroll:
+                return HttpResponse("enrollID")
+
+            for tut in tutorCheck:
+                if tutorID == str(tut.id):
+                    existsTutor = True
+
+            if not existsTutor:
+                return HttpResponse("tutorID")
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    if tutorID == str(enroll.tutor_id):
+                        tutorAlreadyInClass = True
+
+            if tutorAlreadyInClass:
+                return HttpResponse("tutorAlreadyInClass")
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    for qua in qualified:
+                        if qua.course_id == enroll.course_id:
+                            if tutorID == str(qua.tutor_id):
+                                tutorQualified = True
+
+            if not tutorQualified:
+                return HttpResponse("tutorNotQualified")
+
+            try:
+                enrollment = Enrollment.objects.get(id=enrollID)
+                enrollment.tutor_id = tutorID
+                enrollment.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
+def RemoveStudentFromClass(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            studentID = request.POST.get("studentID")
+            enrollCheck = Enrollment.objects.all()
+            enrollStuds = EnrolledStudents.objects.all()
+            studCheck = Student.objects.all()
+            existsEnroll = False
+            existsStud = False
+            studentInClass = False
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    existsEnroll = True
+                    break
+
+            if not existsEnroll:
+                return HttpResponse("enrollID")
+
+            for stud in studCheck:
+                if studentID == str(stud.id):
+                    existsStud = True
+                    break
+
+            if not existsStud:
+                return HttpResponse("studentID")
+
+            for enStuds in enrollStuds:
+                if studentID == str(enStuds.student_id) and enrollID == str(enStuds.enrollment_id):
+                    studentInClass = True
+                    break
+
+            if not studentInClass:
+                return HttpResponse("studentNotInClass")
+
+            try:
+                enrollStudent = EnrolledStudents.objects.filter(student_id=studentID, enrollment_id=enrollID).delete()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To remove")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
+def RemoveTutorFromClass(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            enrollCheck = Enrollment.objects.all()
+            existsEnroll = False
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    existsEnroll = True
+
+            if not existsEnroll:
+                return HttpResponse("enrollID")
+
+            try:
+                enrollment = Enrollment.objects.get(id=enrollID)
+                enrollment.tutor_id = None
+                enrollment.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To remove")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
+def SaveAddClassRoomLink(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            link = request.POST.get("link")
+            enrollCheck = Enrollment.objects.all()
+            existsEnroll = False
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    existsEnroll = True
+
+            if not existsEnroll:
+                return HttpResponse("enrollID")
+
+            try:
+                validator = URLValidator()
+                validator(link)
+            except ValidationError:
+                return HttpResponse("link")
+
+            try:
+                enrollment = Enrollment.objects.get(id=enrollID)
+                enrollment.link = link
+                enrollment.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To add")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
+def RemoveClassRoomLink(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            enrollCheck = Enrollment.objects.all()
+            existsEnroll = False
+
+            for enroll in enrollCheck:
+                if enrollID == str(enroll.id):
+                    existsEnroll = True
+
+            if not existsEnroll:
+                return HttpResponse("enrollID")
+
+            try:
+                enrollment = Enrollment.objects.get(id=enrollID)
+                enrollment.link = None
+                enrollment.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To remove")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
+def EditClass(request, enrollID):
+    return HttpResponse("ok")
+
+
+def DeleteClass(request, enrollID):
+    pass
 # END OF CLASSES SECTION
+
+
+# NOTE: set order by ("-created_at") | change max length for all id as big int is 20char | error in ajax error messages

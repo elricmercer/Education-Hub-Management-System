@@ -584,6 +584,11 @@
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                       <a class="dropdown-item" href="{% url 'admin_edit_class' enrollID=enroll.id %}">Edit</a>
                       <a class="dropdown-item" href="{% url 'admin_delete_class' enrollID=enroll.id %}" onclick="return confirm('Are you sure you want to remove this class')">Delete</a>
+                      {% if enroll.link == None or enroll.link == "" %}
+                        <a class="dropdown-item" href="#">Open Class Room</a>
+                      {% else %}
+                        <a class="dropdown-item" href="{{ enroll.link }}">Open Class Room</a>
+                      {% endif %}
                     </div>
                   </div>
                 </td>

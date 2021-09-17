@@ -61,10 +61,10 @@
             <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <div class="media align-items-center">
                 <span class="avatar avatar-sm rounded-circle">
-                  {% if request.user.admin.pic == "" %}
+                  {% if request.user.tutor.pic == "" or request.user.tutor.pic == None %}
                     <img src="{% static "img/default user/dafault user image.png"%}" type="image/png">
                   {% else %}
-                    <img src="{{ request.user.admin.pic }}">
+                    <img src="{{ request.user.tutor.pic }}">
                   {% endif %}
                 </span>
                 <div class="media-body  ml-2  d-none d-lg-block">
@@ -73,7 +73,7 @@
               </div>
             </a>
             <div class="dropdown-menu  dropdown-menu-right ">
-              <a href="{% url 'admin_profile' %}" class="dropdown-item">
+              <a href="{% url 'tutor_profile' %}" class="dropdown-item">
                 <i class="ni ni-single-02 text-blue"></i>
                 <span>My profile</span>
               </a>

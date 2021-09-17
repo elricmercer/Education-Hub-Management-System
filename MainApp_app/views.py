@@ -24,7 +24,7 @@ def DoLogin(request):
             elif user.user_type == "2":
                 return HttpResponseRedirect(reverse("admin_dashboard"))
             elif user.user_type == "3":
-                return HttpResponse("Tutor login")
+                return HttpResponseRedirect(reverse("tutor_dashboard"))
             elif user.user_type == "4":
                 return HttpResponse("Student login")
             else:

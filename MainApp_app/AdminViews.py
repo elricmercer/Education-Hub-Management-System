@@ -42,7 +42,7 @@ def Profile(request):
     return render(request, "Admin_Pages/profile_template.html", context)
 
 
-def EditProfile(request):  # CHANGE THIS TO MODAL
+def EditProfile(request):
     admin = Admin.objects.get(super_id=request.user.id)
     context = {"admin": admin}
     return render(request, "Admin_Pages/edit_admin_profile_template.html", context)
@@ -1533,3 +1533,4 @@ def UpdateInquiryStatus(request):
 # END OF INQUIRY SECTION
 
 # NOTE: set order by ("-created_at") | change max length for all id as big int is 20char |
+# add default pic to all pic fields in tables | change pic side to 100px width on all table with pics

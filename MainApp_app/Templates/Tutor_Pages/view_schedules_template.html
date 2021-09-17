@@ -1,4 +1,4 @@
-{% extends 'Admin_Pages/base_template.html' %}
+{% extends 'Tutor_Pages/base_template.html' %}
 {% block title_template %}
     <title>Schedules</title>
 {% endblock title_template %}
@@ -10,7 +10,6 @@
       <div class="row align-items-center py-4">
         <div class="col-lg-3 col-6 text-left">
           <a href="#ModalAddSchedule" data-toggle="modal" class="btn btn-sm btn-neutral">Add Schedule</a>
-          <a href="#ModalAddTutorToSchedule" data-toggle="modal" class="btn btn-sm btn-neutral">Add Tutor to Schedule</a>
         </div>
       </div>
     </div>
@@ -31,11 +30,15 @@
               <div class="row">
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <label class="form-control-label" style="margin-bottom: 10px;">Course:</label>
+                    <label class="form-control-label" style="margin-bottom: 10px;">Certified Courses:</label>
                     <select name="courseID" class="form-control" required="required">
                       <option selected="selected" disabled="disabled">Select</option>
-                      {% for cour in course %}
-                        <option value="{{ cour.id }}">{{ cour.name }}</option>
+                      {% for cert in certified %}
+                        {% for cour in course %}
+                          {% ifequal cert.course_id cour.id  %}
+                            <option value="{{ cour.id }}">{{ cour.name }}</option>
+                          {% endifequal %}
+                        {% endfor %}
                       {% endfor %}
                     </select>
                   </div>
@@ -100,46 +103,6 @@
     </div>
   </div>
 </div>
-<!--ADD TUTOR TO SCHEDULE MODAL-->
-<div class="modal fade" tabindex="-1" role="dialog" id="ModalAddTutorToSchedule">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Tutor to Schedule Form</h5>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-        <div class="modal-body">
-          <form id="addTutorToSchedule" role="form">
-            {% csrf_token %}
-            <div class="pl-lg-4">
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="form-control-label" style="margin-bottom: 10px;">Schedule ID:</label>
-                    <input name="scheduleID" type="text" class="form-control" required="required" placeholder="eg: 10" maxlength="150">
-                    <div id="scheduleID"></div>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="form-control-label" style="margin-bottom: 10px;">Tutor ID:</label>
-                    <input name="tutorID" type="text" class="form-control" required="required" placeholder="eg: 10" maxlength="150">
-                    <div id="tutorID"></div>
-                    <div id="tutorID2"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div id="success2"></div>
-            <div id="failed2"></div>
-            <div class="card-footer">
-              <button type="submit" class="btn btn-primary">Add</button>
-            </div>
-          </form>
-        </div>
-    </div>
-  </div>
-</div>
 <!--TABLE-->
 <div class="container-fluid mt--6">
   <!-- Dark table -->
@@ -147,23 +110,19 @@
     <div class="col">
       <div class="card bg-default shadow">
         <div class="card-header bg-transparent border-0">
-          <h3 class="text-white mb-0">Schedules: </h3>
+          <h3 class="text-white mb-0">Schedules:</h3>
         </div>
         <div class="table-responsive">
           <table class="table align-items-center table-dark table-flush">
             <thead class="thead-dark">
               <tr>
                 <th scope="col">Schedule ID</th>
-                <th scope="col">Tutor ID</th>
-                <th scope="col">Tutor Name</th>
                 <th scope="col">Course ID</th>
                 <th scope="col">Course Name</th>
                 <th scope="col">Duration</th>
                 <th scope="col">Day</th>
                 <th scope="col">Time</th>
                 <th scope="col">Status</th>
-                <th scope="col">Created at</th>
-                <th scope="col">Updated at</th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -172,20 +131,6 @@
               <tr>
                 <th scope="row">
                   <span class="name mb-0 text-sm">{{ sch.id }}</span>
-                </th>
-                <th scope="row">
-                  <span class="name mb-0 text-sm">{{ sch.tutor_id }}</span>
-                </th>
-                <th scope="row">
-                  {% for tut in tutor %}
-                    {% ifequal sch.tutor_id tut.id %}
-                      {% for sup in superUser %}
-                        {% ifequal tut.super_id sup.id %}
-                          <span class="name mb-0 text-sm">{{ sup.first_name }} {{ sup.last_name }}</span>
-                        {% endifequal %}
-                      {% endfor %}
-                    {% endifequal %}
-                  {% endfor %}
                 </th>
                 <th scope="row">
                   <span class="name mb-0 text-sm">{{ sch.course_id }}</span>
@@ -209,20 +154,14 @@
                 <th scope="row">
                   <span class="name mb-0 text-sm">{{ sch.status }}</span>
                 </th>
-                <th scope="row">
-                  <span class="name mb-0 text-sm">{{ sch.created_at }}</span>
-                </th>
-                <th scope="row">
-                  <span class="name mb-0 text-sm">{{ sch.updated_at }}</span>
-                </th>
                 <td class="text-right">
                   <div class="dropdown">
                     <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-ellipsis-v"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                      <a class="dropdown-item" href="{% url 'admin_edit_schedule' schID=sch.id %}">Edit</a>
-                      <a class="dropdown-item" href="{% url 'admin_delete_schedule' schID=sch.id %}" onclick="return confirm('Are you sure you want to remove this schedule')">Delete</a>
+                      <a class="dropdown-item" href="{% url 'tutor_edit_schedule' schID=sch.id %}">Edit</a>
+                      <a class="dropdown-item" href="{% url 'tutor_delete_schedule' schID=sch.id %}" onclick="return confirm('Are you sure you want to remove this schedule')">Delete</a>
                     </div>
                   </div>
                 </td>
@@ -277,14 +216,14 @@
         <div class="form-group">
           {% if messages %}
           <div>
-              {% for message in messages %}
+            {% for message in messages %}
               {% if message.tags == 'error' %}
               <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
               {% endif %}
               {% if message.tags == 'success' %}
               <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
               {% endif %}
-              {% endfor %}
+            {% endfor %}
           </div>
           {% endif %}
         </div>
@@ -306,7 +245,7 @@
       $.ajax
       ({
         type: "POST",
-        url: "{% url 'admin_schedules_save' %}",
+        url: "{% url 'tutor_schedules_save' %}",
         data: addScheduleForm.serialize(),
 
         success: function(response)
@@ -340,110 +279,6 @@
           else
           {
             $("#failed").html
-            (
-              '<div></div>'
-            )
-          }
-        },
-        error: function(response)
-        {
-          console.log(response)
-        }
-      })
-    })
-
-    //ADD TUTOR TO SCHEDULE
-    $("#addTutorToSchedule").on("submit", function(event)
-    {
-      event.preventDefault()
-      var addTutorToScheduleForm = $("#addTutorToSchedule")
-      console.log("calling ajax")
-
-      $.ajax
-      ({
-        type: "POST",
-        url: "{% url 'admin_add_tutor_to_schedule' %}",
-        data: addTutorToScheduleForm.serialize(),
-
-        success: function(response)
-        {
-          console.log(response)
-
-          //SCHEDULE ID
-          if(response == "scheduleID")
-          {
-            $("#scheduleID").html
-            (
-              '<p style="color:red"><b>Error! Schedule ID does not exist</b></p>'
-            )
-          }
-          else
-          {
-            $("#scheduleID").html
-            (
-              '<p></p>'
-            )
-          }
-
-          //TUTOR ID
-          if(response == "tutorID")
-          {
-            $("#tutorID").html
-            (
-              '<p style="color:red"><b>Error! Tutor ID does not exist</b></p>'
-            )
-          }
-          else
-          {
-            $("#tutorID").html
-            (
-              '<p></p>'
-            )
-          }
-
-          //TUTOR QUALIFICATION
-          if (response == "notQualified")
-          {
-            $("#tutorID2").html
-            (
-              '<p style="color:red"><b>Error! Tutor not certified</b></p>'
-            )
-          }
-          else
-          {
-            $("#tutorID2").html
-            (
-              '<p></p>'
-            )
-          }
-
-          //TUTOR ADDED TO SCHEDULE
-          if(response == "success")
-          {
-            $("#success2").html
-            (
-              '<div class="alert alert-success" style="margin-top: 10px">Added</div>'
-            )
-          }
-          else
-          {
-            $("#success2").html
-            (
-              '<div></div>'
-            )
-          }
-
-          //FAILED
-          if(response == "failed")
-          {
-            $("#failed2").html
-            (
-              '<div class="alert alert-error" style="margin-top: 10px">Failed! To add</div>'
-            )
-          }
-          else
-          {
-            $("#failed2").html
             (
               '<div></div>'
             )

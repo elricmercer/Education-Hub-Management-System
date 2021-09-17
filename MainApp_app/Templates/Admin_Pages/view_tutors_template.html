@@ -2,6 +2,7 @@
 {% block title_template %}
     <title>Tutors</title>
 {% endblock title_template %}
+{% load static %}
 {% block body_content_template %}
 <!--MENU OPTIONS-->
 <div class="header bg-primary pb-6">
@@ -211,7 +212,11 @@
                 <th scope="row">
                   {% for tut in tutor %}
                     {% ifequal sup.id tut.super_id %}
-                      <span class="name mb-0 text-sm">{{ tut.pic }}</span>
+                      {% if tut.pic == None or tut.pic == "" %}
+                        <img class="avatar rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
+                      {% else %}
+                        <img src="{{ tut.pic }}" class="avatar rounded-circle">
+                      {% endif %}
                     {% endifequal %}
                   {% endfor %}
                 </th>

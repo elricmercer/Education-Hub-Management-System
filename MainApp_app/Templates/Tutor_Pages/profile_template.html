@@ -26,10 +26,10 @@
           <div class="col-lg-3 order-lg-2">
             <div class="card-profile-image">
               <a href="#">
-                {% if admin.pic == None or admin.pic == "" %}
+                {% if tutor.pic == None or tutor.pic == "" %}
                   <img class="rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
                 {% else %}
-                  <img src="{{ admin.pic }}" class="rounded-circle">
+                  <img src="{{ tutor.pic }}" class="rounded-circle">
                 {% endif %}
               </a>
             </div>
@@ -68,7 +68,7 @@
               <h3 class="mb-0">Profile </h3>
             </div>
             <div class="col-4 text-right">
-              <a href="{%  url 'admin_edit_profile' %}" class="btn btn-sm btn-primary">Edit Profile</a>
+              <a href="{% url 'tutor_edit_profile' %}" class="btn btn-sm btn-primary">Edit Profile</a>
               <a href="#ModalProfilePic" class="btn btn-sm btn-primary" data-toggle="modal">Profile Pic</a>
             </div>
             <div class="modal fade" tabindex="-1" role="dialog" id="ModalProfilePic" aria-hidden="true">
@@ -79,12 +79,12 @@
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                     <div class="modal-body">
-                      {% if admin.pic == "" %}
+                      {% if tutor.pic == "" or tutor.pic == None %}
                         <a type="button" class="btn btn-primary"  href="#ModalUploadPic" data-toggle="modal" data-dismiss="modal">Upload</a>
                       {% else %}
                         <button type="button" class="btn btn-primary" disabled="disabled">Upload</button>
                       {% endif %}
-                      <a type="button" class="btn btn-danger" href="{% url 'admin_profile_pic_remove' %}" onclick="return confirm('Are you sure you want to remove profile pic')">Remove</a>
+                      <a type="button" class="btn btn-danger" href="{% url 'tutor_remove_profile_pic' %}" onclick="return confirm('Are you sure you want to remove profile pic')">Remove</a>
                     </div>
                 </div>
               </div>
@@ -97,7 +97,7 @@
                       <a type="button" class="btn btn-default" href="#ModalProfilePic" data-toggle="modal" data-dismiss="modal">Back</a>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
-                    <form role="form" action="{% url 'admin_profile_pic_save' %}" method="POST" enctype="multipart/form-data">
+                    <form role="form" action="{% url 'tutor_profile_pic_save' %}" method="POST" enctype="multipart/form-data">
                       {% csrf_token %}
                       <div class="modal-body">
                         <label class="form-control-label">Upload</label>
@@ -120,43 +120,43 @@
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label">Username</label>
-                    <input type="text" class="form-control" value="{{ request.user.username }}">
+                    <input disabled="disabled" type="text" class="form-control" value="{{ request.user.username }}">
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label">Email address</label>
-                    <input type="email" class="form-control" value="{{ request.user.email }}">
+                    <input disabled="disabled" type="email" class="form-control" value="{{ request.user.email }}">
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label">First Name</label>
-                    <input type="text" class="form-control" value="{{ request.user.first_name }}" placeholder="eg. John">
+                    <input disabled="disabled" type="text" class="form-control" value="{{ request.user.first_name }}" placeholder="eg. John">
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label">Last Name</label>
-                    <input type="text" class="form-control" value="{{ request.user.last_name }}" placeholder="eg. Doe">
+                    <input disabled="disabled" type="text" class="form-control" value="{{ request.user.last_name }}" placeholder="eg. Doe">
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label">Gender</label>
-                    <input type="text" class="form-control" value="{{ admin.gender }}" placeholder="eg. Male">
+                    <input disabled="disabled" type="text" class="form-control" value="{{ tutor.gender }}" placeholder="eg. Male">
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label">Date of Birth</label>
-                    <input type="text" class="form-control" value="{{ admin.dob }}" placeholder="eg. 01/01/1990">
+                    <input disabled="disabled" type="text" class="form-control" value="{{ tutor.dob }}" placeholder="eg. 01/01/1990">
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label">Phone Number</label>
-                    <input type="text" class="form-control" value="{{ admin.phone_no }}" placeholder="eg. 01234567890">
+                    <input disabled="disabled" type="text" class="form-control" value="{{ tutor.phone_no }}" placeholder="eg. 01234567890">
                   </div>
                 </div>
               </div>

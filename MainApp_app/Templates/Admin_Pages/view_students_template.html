@@ -2,6 +2,7 @@
 {% block title_template %}
     <title>Students</title>
 {% endblock title_template %}
+{% load static %}
 {% block body_content_template %}
 <!--HEAD-->
 <div class="header bg-primary pb-6">
@@ -174,7 +175,11 @@
                 <th scope="row">
                   {% for stud in student %}
                     {% ifequal sup.id stud.super_id %}
-                      <span class="name mb-0 text-sm">{{ stud.pic }}</span>
+                      {% if stud.pic == None or stud.pic == "" %}
+                        <img class="avatar rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
+                      {% else %}
+                        <img src="{{ stud.pic }}" class="avatar rounded-circle">
+                      {% endif %}
                     {% endifequal %}
                   {% endfor %}
                 </th>

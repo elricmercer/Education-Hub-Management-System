@@ -1,86 +1,32 @@
 <ul class="navbar-nav navbar-fixed-left">
-    {% url 'admin_dashboard' as admin_dashboard %}
+    {% url 'tutor_dashboard' as tutor_dashboard %}
     <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_dashboard %} active {% endif %}" href="{{ admin_dashboard }}">
+      <a class="nav-link {% if request.path == tutor_dashboard %} active {% endif %}" href="{{ tutor_dashboard }}">
         <i class="ni ni-chart-pie-35 text-orange"></i>
         <span class="nav-link-text">Dashboard</span>
       </a>
     </li>
-    {% if request.user.user_type == "1" %}
-    {% url 'admin_view_administrators' as admin_view_administrators %}
+    {% url 'tutor_view_students' as tutor_view_students %}
     <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_administrators %} active {% endif %}"
-         href="{{ admin_view_administrators }}">
-        <i class="ni ni-settings-gear-65 text-red"></i>
-        <span class="nav-link-text">Administrators</span>
-      </a>
-    </li>
-    {% endif %}
-    {% url 'admin_view_students' as admin_view_students %}
-    {% url 'admin_view_student_payment' studID=id as admin_view_student_payment %}
-    {% url 'admin_edit_students' superID=id as admin_edit_students %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_students %} active {% endif %}
-        {% if request.path == admin_view_student_payment %} active {% endif %}
-        {% if request.path == admin_edit_students %} active {% endif %}" href="{{ admin_view_students }}">
+      <a class="nav-link {% if request.path == tutor_view_students %} active {% endif %}" href="{{ tutor_view_students }}">
         <i class="ni ni-hat-3 text-primary"></i>
         <span class="nav-link-text">Students</span>
       </a>
     </li>
-    {% url 'admin_view_tutors' as admin_view_tutors %}
-    {% url 'admin_edit_tutors' superID=id as admin_edit_tutors %}
-    {% url 'admin_view_tutor_payment' tutorID=id as admin_view_tutor_payment %}
-    {% url 'admin_view_tutor_certifications' tutID=id as admin_view_tutor_certifications %}
+    {% url 'tutor_view_schedules' as tutor_view_schedules %}
     <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_tutors %} active {% endif %}
-        {% if request.path == admin_edit_tutors %} active {% endif %}
-        {% if request.path == admin_view_tutor_payment %} active {% endif %}
-        {% if request.path == admin_view_tutor_certifications %} active {% endif %}" href="{{ admin_view_tutors }}">
-        <i class="ni ni-single-02 text-default"></i>
-        <span class="nav-link-text">Tutors</span>
-      </a>
-    </li>
-    {% url 'admin_view_schedules' as admin_view_schedules %}
-    {% url 'admin_edit_schedule' schID=id as admin_edit_schedule %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_schedules %} active {% endif %}
-        {% if request.path == admin_edit_schedule %} active {% endif %}" href="{{ admin_view_schedules }}">
+      <a class="nav-link {% if request.path == tutor_view_schedules %} active {% endif %}" href="{{ tutor_view_schedules }}">
         <i class="ni ni-bullet-list-67 text-red"></i>
         <span class="nav-link-text">Schedules</span>
       </a>
     </li>
-    {% url 'admin_view_classes' as admin_view_classes %}
-    {% url 'admin_edit_class' enrollID=id as admin_edit_class %}
+    {% url 'tutor_view_classes' as tutor_view_classes %}
+    {% url 'tutor_edit_schedule' schID=id as tutor_edit_schedule %}
     <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_classes %} active {% endif %}
-        {% if request.path == admin_edit_class %} active {% endif %}" href="{{ admin_view_classes }}">
+      <a class="nav-link {% if request.path == tutor_view_classes %} active {% endif %}
+        {% if request.path == tutor_edit_schedule %} active {% endif %}" href="{{ tutor_view_classes }}">
         <i class="ni ni-books text-primary"></i>
         <span class="nav-link-text">Classes</span>
-      </a>
-    </li>
-    {% url 'admin_view_course' as admin_view_course %}
-    {% url 'admin_edit_course' courID=id as admin_edit_course %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_course %} active {% endif %}
-        {% if request.path == admin_edit_course %} active {% endif %}" href="{{ admin_view_course }}">
-        <i class="ni ni-paper-diploma text-info"></i>
-        <span class="nav-link-text">Courses</span>
-      </a>
-    </li>
-    {% if request.user.user_type == "1" %}
-    {% url 'admin_view_revenue' as admin_view_revenue %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_revenue %} active {% endif %}" href="{{ admin_view_revenue }}">
-        <i class="ni ni-money-coins text-green"></i>
-        <span class="nav-link-text">Revenue</span>
-      </a>
-    </li>
-    {% endif %}
-    {% url 'admin_view_inquiries' as admin_view_inquiries %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.path == admin_view_inquiries %} active {% endif %}" href="{{ admin_view_inquiries }}">
-        <i class="ni ni-archive-2 text-red"></i>
-        <span class="nav-link-text">Inquiries</span>
       </a>
     </li>
 </ul>

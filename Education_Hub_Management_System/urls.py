@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 
 from Education_Hub_Management_System import settings
-from MainApp_app import views, AdminViews, SuperUserView
+from MainApp_app import views, AdminViews, SuperUserViews, TutorViews
 
 urlpatterns = [
     # COMMON
@@ -28,12 +28,12 @@ urlpatterns = [
     path('logout', views.DoLogout, name='logout'),
 
     # SUPER USER
-    path('admin_view_administrators', SuperUserView.ViewAdministrators, name="admin_view_administrators"),
-    path('admin_add_administrators_save', SuperUserView.SaveAddAdmin, name="admin_add_administrators_save"),
-    path('admin_edit_administrators/<str:superID>', SuperUserView.EditAdmin, name="admin_edit_administrators"),
-    path('admin_edit_administrators_save', SuperUserView.SaveEditAdmin, name="admin_edit_administrators_save"),
-    path('admin_delete_administrators/<str:superUserID>', SuperUserView.DeleteAdmin, name="admin_delete_administrators"),
-    path('admin_view_revenue', SuperUserView.ViewRevenue, name="admin_view_revenue"),
+    path('admin_view_administrators', SuperUserViews.ViewAdministrators, name="admin_view_administrators"),
+    path('admin_add_administrators_save', SuperUserViews.SaveAddAdmin, name="admin_add_administrators_save"),
+    path('admin_edit_administrators/<str:superID>', SuperUserViews.EditAdmin, name="admin_edit_administrators"),
+    path('admin_edit_administrators_save', SuperUserViews.SaveEditAdmin, name="admin_edit_administrators_save"),
+    path('admin_delete_administrators/<str:superUserID>', SuperUserViews.DeleteAdmin, name="admin_delete_administrators"),
+    path('admin_view_revenue', SuperUserViews.ViewRevenue, name="admin_view_revenue"),
 
     # ADMIN
     path('admin_dashboard', AdminViews.Dashboard, name="admin_dashboard"),
@@ -84,4 +84,19 @@ urlpatterns = [
     path('admin_edit_class_save', AdminViews.SaveEditClass, name="admin_edit_class_save"),
     path('admin_view_inquiries', AdminViews.ViewInquiries, name="admin_view_inquiries"),
     path('admin_update_inquiry_status_save', AdminViews.UpdateInquiryStatus, name="admin_update_inquiry_status_save"),
+
+    # TUTOR
+    path('tutor_dashboard', TutorViews.Dashboard, name="tutor_dashboard"),
+    path('tutor_profile', TutorViews.Profile, name="tutor_profile"),
+    path('tutor_profile_pic_save', TutorViews.SaveProfilePic, name="tutor_profile_pic_save"),
+    path('tutor_remove_profile_pic', TutorViews.RemoveProfilePic, name="tutor_remove_profile_pic"),
+    path('tutor_edit_profile', TutorViews.EditProfile, name="tutor_edit_profile"),
+    path('tutor_edit_profile_save', TutorViews.SaveEditProfile, name="tutor_edit_profile_save"),
+    path('tutor_view_students', TutorViews.ViewStudents, name="tutor_view_students"),
+    path('tutor_view_classes', TutorViews.ViewClasses, name="tutor_view_classes"),
+    path('tutor_view_schedules', TutorViews.ViewSchedule, name="tutor_view_schedules"),
+    path('tutor_schedules_save', TutorViews.SaveSchedule, name="tutor_schedules_save"),
+    path('tutor_edit_schedule/<str:schID>', TutorViews.EditSchedule, name="tutor_edit_schedule"),
+    path('tutor_edit_schedule_save', TutorViews.SaveEditSchedule, name="tutor_edit_schedule_save"),
+    path('tutor_delete_schedule/<str:schID>', TutorViews.DeleteSchedule, name="tutor_delete_schedule"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

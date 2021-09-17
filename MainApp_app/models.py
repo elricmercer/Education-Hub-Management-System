@@ -162,7 +162,7 @@ class Attendance(models.Model):
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     start_time = models.CharField(max_length=10)
-    end_time = models.CharField(max_length=10)
+    duration = models.CharField(max_length=15)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()

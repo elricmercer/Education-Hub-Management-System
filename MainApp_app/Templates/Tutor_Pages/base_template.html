@@ -1,0 +1,84 @@
+<!--
+TEMPLATE:
+          =========================================================
+          * Argon Dashboard - v1.2.0
+          =========================================================
+          * Product Page: https://www.creative-tim.com/product/argon-dashboard
+
+
+          * Copyright  Creative Tim (http://www.creative-tim.com)
+          * Coded by www.creative-tim.com
+
+
+
+          =========================================================
+          * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Start your development with a Dashboard for Bootstrap 4.">
+  <meta name="author" content="Creative Tim">
+  {% block title_template %}{% endblock title_template %}
+  <!-- Favicon -->
+  <link rel="icon" href="{% static "logo/ico1.ico"%}" type="image/png">
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
+  <!-- Icons -->
+  <link rel="stylesheet" href="{% static "vendor/nucleo/css/nucleo.css"%}" type="text/css">
+  <link rel="stylesheet" href="{% static "vendor/@fortawesome/fontawesome-free/css/all.min.css"%}" type="text/css">
+  <!-- Page plugins -->
+  <!-- Argon CSS -->
+  <link rel="stylesheet" href="{% static "css/argon.css"%}" type="text/css">
+  {% block custom_css %}{% endblock custom_css %}
+</head>
+
+<body>
+  <!-- Sidenav -->
+  <nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+    <div class="scrollbar-inner">
+      <!-- Brand -->
+      <div class="sidenav-header  align-items-center">
+        <a class="navbar-brand" href="javascript:void(0)">
+          <img src="{% static "logo/logo5.png"%}" class="navbar-brand-img" alt="..." style="max-height: 5rem;">
+        </a>
+      </div>
+      <div class="navbar-inner">
+        <!-- Collapse -->
+        <div class="collapse navbar-collapse" id="sidenav-collapse-main" style="margin-top: 15px;">
+          <!-- Nav items -->
+          {% include 'Admin_Pages/nav_items_template.html' with id=id %}
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- Main content -->
+  <div class="main-content" id="panel">
+    <!-- Topnav -->
+      {% include 'Admin_Pages/top_navbar_template.html' %}
+    <!-- Header -->
+    <!-- Header -->
+      {% block body_content_template %}{% endblock body_content_template %}
+  </div>
+  <!-- Argon Scripts -->
+  <!-- Core -->
+  <script src="{% static "vendor/jquery/dist/jquery.min.js"%}"></script>
+  <script src="{% static "vendor/bootstrap/dist/js/bootstrap.bundle.min.js"%}"></script>
+  <script src="{% static "vendor/js-cookie/js.cookie.js"%}"></script>
+  <script src="{% static "vendor/jquery.scrollbar/jquery.scrollbar.min.js"%}"></script>
+  <script src="{% static "vendor/jquery-scroll-lock/dist/jquery-scrollLock.min.js"%}"></script>
+  <!-- Optional JS -->
+  <script src="{% static "vendor/chart.js/dist/Chart.min.js"%}"></script>
+  <script src="{% static "vendor/chart.js/dist/Chart.extension.js"%}"></script>
+  <script src="{% static "vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"%}"></script>
+  <!-- Argon JS -->
+  <script src="{% static "js/argon.js"%}"></script>
+
+{% block custom_js %}{% endblock custom_js %}
+</body>
+
+</html>

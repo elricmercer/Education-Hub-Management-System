@@ -1,0 +1,292 @@
+{% extends 'Admin_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Inquiries</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!--HEAD-->
+<div class="header bg-primary pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-2 col-6 text-left">
+            <a href="#ModalUpdateInquiryStatus" data-toggle="modal" class="btn btn-sm btn-neutral">Update Inquiry Status</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--ADD INQUIRY STATUS MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalUpdateInquiryStatus">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Inquiry Status Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="updateInquiryStatus" role="form">
+            {% csrf_token %}
+            <input name="superID" type="hidden" value="{{ request.user.id }}">
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Inquiry ID:</label>
+                    <input class="form-control" type="text" name="inquiryID" maxlength="20" placeholder="eg: 10" required="required">
+                    <div id="inquiryID"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Status:</label>
+                    <select name="status" class="form-control" required="required">
+                      <option selected="selected" disabled="disabled">Select</option>
+                      <option>Pending</option>
+                      <option>Active</option>
+                      <option>Closed</option>
+                    </select>
+                    <div id="status"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success"></div>
+            <div id="failed"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--TABLE-->
+{% for stat in statusList %}
+  <div class="container-fluid mt--6">
+    <!-- Dark table -->
+    <div class="row" style="margin-bottom: 100px">
+      <div class="col">
+        <div class="card bg-default shadow">
+          <div class="card-header bg-transparent border-0">
+            <h3 class="text-white mb-0">Inquiries: {{ stat }} </h3>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-dark table-flush">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Inquiry ID</th>
+                  <th scope="col">Super User ID</th>
+                  <th scope="col">User Type</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Issue Title</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Admin ID</th>
+                  <th scope="col">Admin Name</th>
+                  <th scope="col">Created at</th>
+                  <th scope="col">Updated at</th>
+                </tr>
+              </thead>
+              <tbody class="list">
+              {% for inq in inquiries %}
+                {% ifequal stat inq.status %}
+                  <tr>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.id }}</span>
+                    </th>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.super_id }}</span>
+                    </th>
+                    <th scope="row">
+                      {% for sup in superUser %}
+                        {% ifequal inq.super_id sup.id %}
+                          {% if sup.user_type == "3" %}
+                            <span class="name mb-0 text-sm">Tutor</span>
+                          {% elif sup.user_type == "4" %}
+                            <span class="name mb-0 text-sm">Student</span>
+                          {% endif %}
+                        {% endifequal %}
+                      {% endfor %}
+                    </th>
+                    <th scope="row">
+                      {% for sup in superUser %}
+                        {% ifequal inq.super_id sup.id %}
+                        <span class="name mb-0 text-sm">{{ sup.first_name }} {{ sup.last_name }}</span>
+                        {% endifequal %}
+                      {% endfor %}
+                    </th>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.issue_title }}</span>
+                    </th>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.description | safe }}</span>
+                    </th>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.status }}</span>
+                    </th>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.admin_id }}</span>
+                    </th>
+                    <th scope="row">
+                      {% for ad in admin %}
+                        {% ifequal inq.admin_id ad.id %}
+                          {% for sup in superUser %}
+                            {% ifequal ad.super_id sup.id %}
+                            <span class="name mb-0 text-sm">{{ sup.first_name }} {{ sup.last_name }}</span>
+                            {% endifequal %}
+                          {% endfor %}
+                        {% endifequal %}
+                      {% endfor %}
+                    </th>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.created_at }}</span>
+                    </th>
+                    <th scope="row">
+                      <span class="name mb-0 text-sm">{{ inq.updated_at }}</span>
+                    </th>
+                  </tr>
+                {% endifequal %}
+              {% endfor %}
+              </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+              {% if inquiries.has_other_pages %}
+                <ul class="pagination justify-content-end">
+                  {% if inquiries.has_previous %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ inquiries.previous_page_number }}" tabindex="-1">
+                        <i class="fa fa-angle-left"></i>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <a class="page-link" tabindex="-1">
+                        <i class="fa fa-angle-left"></i>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                  {% endif %}
+                  {% for i in inquiries.paginator.page_range %}
+                    {% if inquiries.number == i %}
+                      <li class="page-item active"><a class="page-link">{{ i }}<a class="sr-only">(current)</a></a></li>
+                    {% else %}
+                      <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                  {% endfor %}
+                  {% if inquiries.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ inquiries.next_page_number }}">
+                      <i class="fa fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1">
+                      <i class="fa fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                  {% endif %}
+                </ul>
+              {% endif %}
+            </nav>
+          </div>
+          <div class="form-group">
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+                {% endif %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+    $("#updateInquiryStatus").on("submit", function(event)
+    {
+      event.preventDefault()
+      var updateInquiryStatusForm = $("#updateInquiryStatus")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_update_inquiry_status_save' %}",
+        data: updateInquiryStatusForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //INQUIRY ID
+          if(response == "inquiryID")
+          {
+            $("#inquiryID").html
+            (
+              '<p style="color:red"><b>Error! Inquiry ID does not exist</b></p>'
+            )
+          }
+          else
+          {
+            $("#inquiryID").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //STATUS UPDATED
+          if(response == "success")
+          {
+            $("#success").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Updated</div>'
+            )
+          }
+          else
+          {
+            $("#success").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response == "failed")
+          {
+            $("#failed").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To updated</div>'
+            )
+          }
+          else
+          {
+            $("#failed").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+  })
+</script>
+{% endblock custom_js %}

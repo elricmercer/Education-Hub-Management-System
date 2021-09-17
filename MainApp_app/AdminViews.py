@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from Education_Hub_Management_System.settings import BASE_DIR
 from MainApp_app.models import Admin, SuperUser, Student, StudentPayment, Tutor, TutorEarnings, Course, \
     TutorsCertifiedToCourse, TutorApplyToCertifyToCourse, Schedule, Enrollment, EnrolledStudents, EnrollmentDays, \
-    EnrollmentTime
+    EnrollmentTime, CompanyEarnings, ContactUs
 
 
 # DASHBOARD SECTION
@@ -1320,12 +1320,216 @@ def RemoveClassRoomLink(request):
 
 
 def EditClass(request, enrollID):
-    return HttpResponse("ok")
+    enrollment = Enrollment.objects.get(id=enrollID)
+    course = Course.objects.all()
+    enrollmentDays = EnrollmentDays.objects.get(enrollment_id=enrollID)
+    enrollmentTime = EnrollmentTime.objects.get(enrollment_id=enrollID)
+    context = {"enrollment": enrollment, "id": enrollID, "course": course, "enrollmentDays": enrollmentDays,
+               "enrollmentTime": enrollmentTime}
+    return render(request, "Admin_Pages/edit_classes_template.html", context)
+
+
+def SaveEditClass(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            courseID = request.POST.get("courseID")
+            startDate = request.POST.get("startDate")
+            endDate = request.POST.get("endDate")
+            status = request.POST.get("status")
+            monday = request.POST.get("monday")
+            mondayTime = request.POST.get("mondayTime")
+            tuesday = request.POST.get("tuesday")
+            tuesdayTime = request.POST.get("tuesdayTime")
+            wednesday = request.POST.get("wednesday")
+            wednesdayTime = request.POST.get("wednesdayTime")
+            thursday = request.POST.get("thursday")
+            thursdayTime = request.POST.get("thursdayTime")
+            friday = request.POST.get("friday")
+            fridayTime = request.POST.get("fridayTime")
+            saturday = request.POST.get("saturday")
+            saturdayTime = request.POST.get("saturdayTime")
+            sunday = request.POST.get("sunday")
+            sundayTime = request.POST.get("sundayTime")
+
+            # MONDAY
+            if monday == "Yes":
+                if mondayTime is None or mondayTime == "":
+                    return HttpResponse("mondayTime")
+            else:
+                mondayTime = "00:00"
+
+            # TUESDAY
+            if tuesday == "Yes":
+                if tuesdayTime is None or tuesdayTime == "":
+                    return HttpResponse("tuesdayTime")
+            else:
+                tuesdayTime = "00:00"
+
+            # WEDNESDAY
+            if wednesday == "Yes":
+                if wednesdayTime is None or wednesdayTime == "":
+                    return HttpResponse("wednesdayTime")
+            else:
+                wednesdayTime = "00:00"
+
+            # THURSDAY
+            if thursday == "Yes":
+                if thursdayTime is None or thursdayTime == "":
+                    return HttpResponse("thursdayTime")
+            else:
+                thursdayTime = "00:00"
+
+            # FRIDAY
+            if friday == "Yes":
+                if fridayTime is None or fridayTime == "":
+                    return HttpResponse("fridayTime")
+            else:
+                fridayTime = "00:00"
+
+            # SATURDAY
+            if saturday == "Yes":
+                if saturdayTime is None or saturdayTime == "":
+                    return HttpResponse("saturdayTime")
+            else:
+                saturdayTime = "00:00"
+
+            # SUNDAY
+            if sunday == "Yes":
+                if sundayTime is None or sundayTime == "":
+                    return HttpResponse("sundayTime")
+            else:
+                sundayTime = "00:00"
+
+            # START DATE & END DATE
+            d1 = startDate
+            d2 = endDate
+            date = d1.split('-')
+            d1 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]))  # 0 is y, 1 is m, 2 is d
+            date = d2.split('-')
+            d2 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]))
+
+            if d1 > d2:
+                return HttpResponse("startDate")
+
+            try:
+                enrollment = Enrollment.objects.get(id=enrollID)
+                enrollment.course_id = courseID
+                enrollment.start_date = startDate
+                enrollment.end_date = endDate
+                enrollment.status = status
+                enrollment.save()
+                enrollmentDays = EnrollmentDays.objects.get(enrollment_id=enrollID)
+                enrollmentDays.monday = monday
+                enrollmentDays.tuesday = tuesday
+                enrollmentDays.wednesday = wednesday
+                enrollmentDays.thursday = thursday
+                enrollmentDays.friday = friday
+                enrollmentDays.saturday = saturday
+                enrollmentDays.sunday = sunday
+                enrollmentDays.save()
+                enrollmentTime = EnrollmentTime.objects.get(enrollment_id=enrollID)
+                enrollmentTime.monday = mondayTime
+                enrollmentTime.tuesday = tuesdayTime
+                enrollmentTime.wednesday = wednesdayTime
+                enrollmentTime.thursday = thursdayTime
+                enrollmentTime.friday = fridayTime
+                enrollmentTime.saturday = saturdayTime
+                enrollmentTime.sunday = sundayTime
+                enrollmentTime.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To edit")
+            return HttpResponseRedirect(reverse("admin_view_classes"))
 
 
 def DeleteClass(request, enrollID):
-    pass
+    try:
+        enrollment = Enrollment.objects.filter(id=enrollID).delete()
+        messages.success(request, "Deleted")
+        return HttpResponseRedirect(reverse("admin_view_classes"))
+    except:
+        messages.error(request, "Failed! To delete")
+        return HttpResponseRedirect(reverse("admin_view_classes"))
+
+
 # END OF CLASSES SECTION
 
 
-# NOTE: set order by ("-created_at") | change max length for all id as big int is 20char | error in ajax error messages
+# INQUIRY SECTION
+def ViewInquiries(request):
+    contactUs = ContactUs.objects.all()
+    admin = Admin.objects.all()
+    superUser = SuperUser.objects.all()
+    statusList = []
+    statusList.append("Pending")
+    statusList.append("Active")
+    statusList.append("Closed")
+    page = request.GET.get('page', 1)
+    paginator = Paginator(contactUs, 6)
+
+    try:
+        inquiries = paginator.page(page)
+    except PageNotAnInteger:
+        inquiries = paginator.page(1)
+    except EmptyPage:
+        inquiries = paginator.page(paginator.num_pages)
+
+    context = {"inquiries": inquiries, "admin": admin, "statusList": statusList, "superUser": superUser}
+    return render(request, "Admin_Pages/view_inquiries_template.html", context)
+
+
+def UpdateInquiryStatus(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            inquiryID = request.POST.get("inquiryID")
+            status = request.POST.get("status")
+            superID = request.POST.get("superID")
+            inquiryCheck = ContactUs.objects.all()
+            admin = Admin.objects.all()
+            superUser = SuperUser.objects.all()
+            existsInquiryID = False
+            adminsInq = False
+
+            for inq in inquiryCheck:
+                if inquiryID == str(inq.id):
+                    existsInquiryID = True
+                    break
+
+            if not existsInquiryID:
+                return HttpResponse("inquiryID")
+
+            for inq in inquiryCheck:
+                if inquiryID == str(inq.id):
+                    for ad in admin:
+                        if superID == str(ad.super_id):
+                            if inq.admin_id == ad.id:
+                                adminsInq = True
+
+            for sup in superUser:
+                if superID == str(sup.id):
+                    if sup.user_type == "1":
+                        adminsInq = True
+
+            if not adminsInq:
+                return HttpResponse("failed")
+
+            try:
+                inquiry = ContactUs.objects.get(id=inquiryID)
+                inquiry.status = status
+                inquiry.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To update")
+            return HttpResponseRedirect(reverse("admin_view_inquiries"))
+# END OF INQUIRY SECTION
+
+# NOTE: set order by ("-created_at") | change max length for all id as big int is 20char |

@@ -1,10 +1,13 @@
+import datetime
+
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from MainApp_app.models import Admin, SuperUser
+from MainApp_app.models import Admin, SuperUser, CompanyEarnings, Student
+
 
 # ADMINISTRATORS SECTION
 def ViewAdministrators(request):
@@ -188,3 +191,43 @@ def DeleteAdmin(request, superUserID):
         messages.error(request, "Failed! To delete")
         return HttpResponseRedirect(reverse("admin_view_administrators"))
 # END OF ADMINISTRATORS SECTION
+
+
+# REVENUE SECTION
+def ViewRevenue(requests):
+    earned = CompanyEarnings.objects.all()
+    student = Student.objects.all()
+    superUser = SuperUser.objects.all()
+    allYearList = []
+    yearsList = []
+
+    for earn in earned:
+        year = int(earn.year)
+        allYearList.append(year)
+
+    try:
+        earliestYear = min(allYearList)
+        currentDate = datetime.date.today()
+        currentYear = currentDate.year
+        diff = (currentYear - earliestYear) + 1
+
+        for i in range(diff):
+            years = str(earliestYear + i)
+            yearsList.append(years)
+    except:
+        pass
+
+    page = requests.GET.get('page', 1)
+    paginator = Paginator(earned, 6)
+
+    try:
+        earnings = paginator.page(page)
+    except PageNotAnInteger:
+        earnings = Paginator.page(1)
+    except EmptyPage:
+        earnings = paginator.page(paginator.num_pages)
+
+    yearsList.sort(reverse=True)
+    context = {"earnings": earnings, "student": student, "superUser": superUser, "yearsList": yearsList}
+    return render(requests, "Super_User_Pages/view_revenue_template.html", context)
+# END OF REVENUE SECTION

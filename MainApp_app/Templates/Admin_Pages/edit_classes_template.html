@@ -1,0 +1,424 @@
+{% extends 'Admin_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Edit Classes</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<div class="col-xl-8 order-xl-1">
+  <div class="card" style="left: 110px; top: 10px;">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h3 class="mb-0">Class ID: {{ id }} </h3>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form id="editClass" role="form">
+        {% csrf_token %}
+        <input type="hidden" name="enrollID" value="{{ id }}">
+        <div class="pl-lg-4">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Course:</label>
+                <select name="courseID" class="form-control" required="required">
+                    {% for cour in course %}
+                        {% ifequal enrollment.course_id cour.id %}
+                            <option selected="selected" value="{{ cour.id }}">{{ cour.name }}</option>
+                        {% endifequal %}
+                    {% endfor %}
+                    <option disabled="disabled">-------------------------------------</option>
+                    {% for cour in course %}
+                        <option value="{{ cour.id }}">{{ cour.name }}</option>
+                    {% endfor %}
+                </select>
+                <div id="courseID"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Start Date:</label>
+                <input type="date" class="form-control" required="required" name="startDate" value="{{ enrollment.start_date }}">
+                <div id="startDate"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">End Date:</label>
+                <input type="date" class="form-control" required="required" name="endDate" value="{{ enrollment.end_date }}">
+                <div id="endDate"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Status:</label>
+                <select name="status" class="form-control" required="required">
+                  <option selected="selected">{{ enrollment.status }}</option>
+                  <option disabled="disabled">----------------------------------</option>
+                  <option>Active</option>
+                  <option>Inactive</option>
+                </select>
+                <div id="status"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="my-4" />
+        <h6 class="heading-small text-muted mb-4">Setup Days & Time</h6>
+        <div class="pl-lg-4">
+          <div class="row">
+            <!--                MONDAY-->
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Monday:</label>
+                <select name="monday" class="form-control">
+                    <option selected="selected">{{ enrollmentDays.monday }}</option>
+                    <option disabled="disabled">----------------------------------</option>
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+                <div id="monday"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" name="mondayTime" value="{{ enrollmentTime.monday }}">
+                <div id="mondayTime"></div>
+              </div>
+            </div>
+            <!--                TUESDAY-->
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Tuesday:</label>
+                <select name="tuesday" class="form-control">
+                    <option selected="selected">{{ enrollmentDays.tuesday }}</option>
+                    <option disabled="disabled">----------------------------------</option>
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+                <div id="tuesday"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" name="tuesdayTime" value="{{ enrollmentTime.tuesday }}">
+                <div id="tuesdayTime"></div>
+              </div>
+            </div>
+            <!--                WEDNESDAY-->
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Wednesday:</label>
+                <select name="wednesday" class="form-control">
+                    <option selected="selected">{{ enrollmentDays.wednesday }}</option>
+                    <option disabled="disabled">----------------------------------</option>
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+                <div id="wednesday"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" name="wednesdayTime" value="{{ enrollmentTime.wednesday }}">
+                <div id="wednesdayTime"></div>
+              </div>
+            </div>
+            <!--                THURSDAY-->
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Thursday:</label>
+                <select name="thursday" class="form-control">
+                    <option selected="selected">{{ enrollmentDays.thursday }}</option>
+                    <option disabled="disabled">----------------------------------</option>
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+                <div id="thursday"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" name="thursdayTime" value="{{ enrollmentTime.thursday }}">
+                <div id="thursdayTime"></div>
+              </div>
+            </div>
+            <!--                FRIDAY-->
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Friday:</label>
+                <select name="friday" class="form-control">
+                    <option selected="selected">{{ enrollmentDays.friday }}</option>
+                    <option disabled="disabled">----------------------------------</option>
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+                <div id="friday"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" name="fridayTime" value="{{ enrollmentTime.friday }}">
+                <div id="fridayTime"></div>
+              </div>
+            </div>
+            <!--                SATURDAY-->
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Saturday:</label>
+                <select name="saturday" class="form-control">
+                    <option selected="selected">{{ enrollmentDays.saturday }}</option>
+                    <option disabled="disabled">----------------------------------</option>
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+                <div id="saturday"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" name="saturdayTime" value="{{ enrollmentTime.saturday }}">
+                <div id="saturdayTime"></div>
+              </div>
+            </div>
+            <!--                SUNDAY-->
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Sunday:</label>
+                <select name="sunday" class="form-control">
+                    <option selected="selected">{{ enrollmentDays.sunday }}</option>
+                    <option disabled="disabled">----------------------------------</option>
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+                <div id="sunday"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Time:</label>
+                <input type="time" class="form-control" name="sundayTime" value="{{ enrollmentTime.sunday }}">
+                <div id="sundayTime"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="success"></div>
+        <div id="failed"></div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Edit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+    $(document).ready(function()
+    {
+        $("#editClass").on("submit", function(event)
+        {
+            event.preventDefault()
+            var editClassForm = $("#editClass")
+            console.log("calling ajax")
+
+            $.ajax
+            ({
+                type: "POST",
+                url: "{% url 'admin_edit_class_save' %}",
+                data: editClassForm.serialize(),
+
+                success: function(response)
+                {
+                  console.log(response)
+
+                  //MONDAY
+                  if(response=="mondayTime")
+                  {
+                    $("#mondayTime").html
+                    (
+                      '<p style="color:red"><b>Error! Set time</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#mondayTime").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  //TUESDAY
+                  if(response=="tuesdayTime")
+                  {
+                    $("#tuesdayTime").html
+                    (
+                      '<p style="color:red"><b>Error! Set time</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#tuesdayTime").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  //WEDNESDAY
+                  if(response=="wednesdayTime")
+                  {
+                    $("#wednesdayTime").html
+                    (
+                      '<p style="color:red"><b>Error! Set time</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#wednesdayTime").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  //THURSDAY
+                  if(response=="thursdayTime")
+                  {
+                    $("#thursdayTime").html
+                    (
+                      '<p style="color:red"><b>Error! Set time</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#thursdayTime").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  //FRIDAY
+                  if(response=="fridayTime")
+                  {
+                    $("#fridayTime").html
+                    (
+                      '<p style="color:red"><b>Error! Set time</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#fridayTime").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  //SATURDAY
+                  if(response=="saturdayTime")
+                  {
+                    $("#saturdayTime").html
+                    (
+                      '<p style="color:red"><b>Error! Set time</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#saturdayTime").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  //SUNDAY
+                  if(response=="sundayTime")
+                  {
+                    $("#sundayTime").html
+                    (
+                      '<p style="color:red"><b>Error! Set time</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#sundayTime").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  // START DATE & END DATE
+                  if(response=="startDate")
+                  {
+                    $("#startDate").html
+                    (
+                      '<p style="color:red"><b>Error! Start date cannot exceed end date</b></p>'
+                    )
+                  }
+                  else
+                  {
+                    $("#startDate").html
+                    (
+                      '<p></p>'
+                    )
+                  }
+
+                  //CLASS EDITED
+                  if(response=="success")
+                  {
+                    $("#success").html
+                    (
+                      '<div class="alert alert-success" style="margin-top: 10px">Edited</div>'
+                    )
+                  }
+                  else
+                  {
+                    $("#success").html
+                    (
+                      '<div></div>'
+                    )
+                  }
+
+                  //FAILED
+                  if(response=="failed")
+                  {
+                    $("#failed").html
+                    (
+                      '<div class="alert alert-error" style="margin-top: 10px">Failed! To edit</div>'
+                    )
+                  }
+                  else
+                  {
+                    $("#failed").html
+                    (
+                      '<div></div>'
+                    )
+                  }
+                },
+                failed: function(response)
+                {
+                    console.log(response)
+                }
+            })
+        })
+    })
+</script>
+{% endblock custom_js %}

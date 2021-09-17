@@ -33,6 +33,7 @@ urlpatterns = [
     path('admin_edit_administrators/<str:superID>', SuperUserView.EditAdmin, name="admin_edit_administrators"),
     path('admin_edit_administrators_save', SuperUserView.SaveEditAdmin, name="admin_edit_administrators_save"),
     path('admin_delete_administrators/<str:superUserID>', SuperUserView.DeleteAdmin, name="admin_delete_administrators"),
+    path('admin_view_revenue', SuperUserView.ViewRevenue, name="admin_view_revenue"),
 
     # ADMIN
     path('admin_dashboard', AdminViews.Dashboard, name="admin_dashboard"),
@@ -80,4 +81,7 @@ urlpatterns = [
     path('admin_remove_link_for_class', AdminViews.RemoveClassRoomLink, name="admin_remove_link_for_class"),
     path('admin_edit_class/<str:enrollID>', AdminViews.EditClass, name="admin_edit_class"),
     path('admin_delete_class/<str:enrollID>', AdminViews.DeleteClass, name="admin_delete_class"),
+    path('admin_edit_class_save', AdminViews.SaveEditClass, name="admin_edit_class_save"),
+    path('admin_view_inquiries', AdminViews.ViewInquiries, name="admin_view_inquiries"),
+    path('admin_update_inquiry_status_save', AdminViews.UpdateInquiryStatus, name="admin_update_inquiry_status_save"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

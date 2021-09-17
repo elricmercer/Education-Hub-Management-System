@@ -249,6 +249,7 @@ class ContactUs(models.Model):
     description = models.TextField(blank=True, null=True)
     super = models.OneToOneField(SuperUser, on_delete=models.CASCADE)
     status = models.CharField(max_length=10)
+    admin = models.ForeignKey(Admin, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()

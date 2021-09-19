@@ -704,7 +704,7 @@ def DeleteTutorCertification(request, certID, tutorID):
 
 # COURSE SECTION
 def ViewCourse(request):
-    course = Course.objects.all().order_by('id')
+    course = Course.objects.all().order_by('-created_at')
     page = request.GET.get('page', 1)
     paginator = Paginator(course, 6)
 
@@ -806,7 +806,7 @@ def SaveEditCourse(request):
 # SCHEDULE SECTION(order by not added, add later)
 def ViewSchedules(request):
     course = Course.objects.all()
-    schedule = Schedule.objects.all()
+    schedule = Schedule.objects.all().order_by('-created_at')
     tutor = Tutor.objects.all()
     superUser = SuperUser.objects.all()
     page = request.GET.get('page', 1)
@@ -944,7 +944,7 @@ def SaveEditSchedule(request):
 
 # CLASSES SECTION
 def ViewClasses(request):
-    enrollment = Enrollment.objects.all().order_by("-created_at")
+    enrollment = Enrollment.objects.all().order_by('-created_at')
     enrollmentStudents = EnrolledStudents.objects.all()
     enrollmentDays = EnrollmentDays.objects.all()
     enrollmentTime = EnrollmentTime.objects.all()
@@ -1462,7 +1462,7 @@ def DeleteClass(request, enrollID):
 
 # INQUIRY SECTION
 def ViewInquiries(request):
-    contactUs = ContactUs.objects.all()
+    contactUs = ContactUs.objects.all().order_by('-created_at')
     admin = Admin.objects.all()
     superUser = SuperUser.objects.all()
     statusList = []
@@ -1532,5 +1532,4 @@ def UpdateInquiryStatus(request):
             return HttpResponseRedirect(reverse("admin_view_inquiries"))
 # END OF INQUIRY SECTION
 
-# NOTE: set order by ("-created_at") | change max length for all id as big int is 20char |
-# add default pic to all pic fields in tables | change pic side to 100px width on all table with pics
+# NOTE: certify request part of tutor is incomplete | attendance is incomplete

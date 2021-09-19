@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from django.contrib import messages
@@ -9,7 +10,7 @@ from django.urls import reverse
 
 from Education_Hub_Management_System.settings import BASE_DIR
 from MainApp_app.models import Tutor, SuperUser, EnrolledStudents, Enrollment, Student, EnrollmentDays, EnrollmentTime, \
-    Course, TutorsCertifiedToCourse, Schedule
+    Course, TutorsCertifiedToCourse, Schedule, TutorApplyToCertifyToCourse, TutorEarnings, ContactUs, Admin
 
 
 # DASHBOARD SECTION
@@ -176,13 +177,15 @@ def ViewStudents(request):
 
     context = {"students": students, "enollStuds": enollStuds, "superUser": superUser, "enoll": enoll}
     return render(request, "Tutor_Pages/view_students_template.html", context)
+
+
 # END OF STUDENT SECTION
 
 
 # CLASSES SECTION
 def ViewClasses(request):
     tutor = Tutor.objects.get(super_id=request.user.id)
-    enrollment = Enrollment.objects.filter(tutor_id=tutor.id)
+    enrollment = Enrollment.objects.filter(tutor_id=tutor.id).order_by('-created_at')
     enrollmentStuds = EnrolledStudents.objects.all()
     enrollmentDays = EnrollmentDays.objects.all()
     enrollmentTime = EnrollmentTime.objects.all()
@@ -202,6 +205,8 @@ def ViewClasses(request):
     context = {"enrollments": enrollments, "enrollmentStuds": enrollmentStuds, "enrollmentDays": enrollmentDays,
                "enrollmentTime": enrollmentTime, "student": student, "superUser": superUser, "course": course}
     return render(request, "Tutor_Pages/view_classes_template.html", context)
+
+
 # END OF CLASSES SECTION
 
 
@@ -210,7 +215,7 @@ def ViewSchedule(request):
     tutor = Tutor.objects.get(super_id=request.user.id)
     certified = TutorsCertifiedToCourse.objects.filter(tutor_id=tutor.id)
     course = Course.objects.all()
-    schedule = Schedule.objects.filter(tutor_id=tutor.id)
+    schedule = Schedule.objects.filter(tutor_id=tutor.id).order_by('-created_at')
     page = request.GET.get('page', 1)
     paginator = Paginator(schedule, 6)
 
@@ -238,7 +243,8 @@ def SaveSchedule(request):
             tutor = Tutor.objects.get(super_id=request.user.id)
 
             try:
-                schedule = Schedule(course_id=courseID, duration=duration, day=day, time=time, status=status, tutor_id=tutor.id)
+                schedule = Schedule(course_id=courseID, duration=duration, day=day, time=time, status=status,
+                                    tutor_id=tutor.id)
                 schedule.save()
                 return HttpResponse("success")
             except:
@@ -288,4 +294,141 @@ def DeleteSchedule(request, schID):
     except:
         messages.error(request, "Failed! To delete")
         return HttpResponseRedirect(reverse("tutor_view_schedules"))
-# END OF SCHEDULES
+# END OF SCHEDULES SECTION
+
+# COURSE SECTION
+def ViewCertCourses(request):
+    tutor = Tutor.objects.get(super_id=request.user.id)
+    certCourse = TutorsCertifiedToCourse.objects.filter(tutor_id=tutor.id).order_by('-created_at')
+    course = Course.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(certCourse, 6)
+
+    try:
+        certCourses = paginator.page(page)
+    except PageNotAnInteger:
+        certCourses = paginator.page(1)
+    except EmptyPage:
+        certCourses = paginator.page(paginator.num_pages)
+
+    context = {"certCourses": certCourses, "course": course}
+    return render(request, "Tutor_Pages/view_courses_template.html", context)
+
+
+def SaveAppliedCourse(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            courseID = request.POST.get("courseID")
+            tutor = Tutor.objects.get(super_id=request.user.id)
+            certified = TutorsCertifiedToCourse.objects.filter(tutor_id=tutor.id)
+            applyForCert = TutorApplyToCertifyToCourse.objects.filter(tutor_id=tutor.id)
+
+            for cert in certified:
+                if courseID == str(cert.course_id):
+                    return HttpResponse("alreadyCertified")
+
+            for apply in applyForCert:
+                if apply.status == "Pending" or apply.status == "Active":
+                    return HttpResponse("alreadyApplied")
+
+            try:
+                certify = TutorApplyToCertifyToCourse(status="Pending", course_id=courseID, tutor_id=tutor.id)
+                certify.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To apply")
+            return HttpResponse(reverse("tutor_view_cert_courses"))
+# END OF COURSE SECTION
+
+
+# EARNINGS SECTION
+def ViewEarnings(request):
+    tutor = Tutor.objects.get(super_id=request.user.id)
+    earnings = TutorEarnings.objects.filter(tutor_id=tutor.id).order_by('-created_at')
+    allYearsList = []
+    yearsList = []
+
+    for earn in earnings:
+        year =int(earn.year)
+        allYearsList.append(year)
+
+    try:
+        earliestYear = min(allYearsList)
+        currentDate = datetime.date.today()
+        currentYear = currentDate.year
+        yearDiff = (currentYear - earliestYear)+1
+
+        for i in range(yearDiff):
+            year = str(earliestYear+i)
+            yearsList.append(year)
+
+        yearsList.sort(reverse=True)
+    except:
+        pass
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(earnings, 6)
+
+    try:
+        tutorEarnings = paginator.page(page)
+    except PageNotAnInteger:
+        tutorEarnings = paginator.page(1)
+    except EmptyPage:
+        tutorEarnings = paginator.page(paginator.num_pages)
+
+    context = {"yearsList": yearsList, "tutorEarnings": tutorEarnings}
+    return render(request, "Tutor_Pages/view_earnings_template.html", context)
+# END OF EARNINGS SECTION
+
+
+# CONTACT US SECTION
+def ViewContactUs(request):
+    return render(request, "Tutor_Pages/contact_us_template.html")
+
+
+def SaveContactUs(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            issueTitle = request.POST.get("issueTitle")
+            description = request.POST.get("description")
+            descriptionFinal = description.replace('\n', '<br>')
+
+            try:
+                contactUs = ContactUs(issue_title=issueTitle, description=descriptionFinal, status="Pending",
+                                      super_id=request.user.id)
+                contactUs.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To send")
+            return HttpResponse(reverse("tutor_contact_us"))
+
+
+def ViewInquiries(request):
+    contactUs = ContactUs.objects.filter(super_id=request.user.id).order_by('-created_at')
+    superUser = SuperUser.objects.all()
+    admin = Admin.objects.all()
+    statusList = []
+    statusList.append("Pending")
+    statusList.append("Active")
+    statusList.append("Closed")
+    page = request.GET.get('page', 1)
+    paginator = Paginator(contactUs, 6)
+
+    try:
+        inquiries = paginator.page(page)
+    except PageNotAnInteger:
+        inquiries = paginator.page(1)
+    except EmptyPage:
+        inquiries = paginator.page(paginator.num_pages)
+
+    context = {"inquiries": inquiries, "statusList": statusList, "superUser": superUser, "admin": admin}
+    return render(request, "Tutor_Pages/view_inquiries_template.html", context)
+# END OF CONTACT US SECTION

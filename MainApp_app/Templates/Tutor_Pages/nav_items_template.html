@@ -29,4 +29,25 @@
         <span class="nav-link-text">Classes</span>
       </a>
     </li>
+    {% url 'tutor_view_cert_courses' as tutor_view_cert_courses %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == tutor_view_cert_courses %} active {% endif %}" href="{{ tutor_view_cert_courses }}">
+        <i class="ni ni-paper-diploma text-info"></i>
+        <span class="nav-link-text">Courses</span>
+      </a>
+    </li>
+    {% url 'tutor_view_earnings' as tutor_view_earnings %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == tutor_view_earnings %} active {% endif %}" href="{{ tutor_view_earnings }}">
+        <i class="ni ni-money-coins text-green"></i>
+        <span class="nav-link-text">Earnings</span>
+      </a>
+    </li>
+    {% url 'tutor_contact_us' as tutor_contact_us %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == tutor_contact_us %} active {% endif %}" href="{{ tutor_contact_us }}">
+        <i class="ni ni-mobile-button text-red"></i>
+        <span class="nav-link-text">Contact Us</span>
+      </a>
+    </li>
 </ul>

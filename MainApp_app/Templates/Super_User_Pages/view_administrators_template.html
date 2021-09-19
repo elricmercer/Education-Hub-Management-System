@@ -2,6 +2,7 @@
 {% block title_template %}
     <title>Administrators</title>
 {% endblock title_template %}
+{% load static %}
 {% block body_content_template %}
 <!--MENU OPTIONS-->
 <div class="header bg-primary pb-6">
@@ -143,7 +144,11 @@
                 <th scope="row">
                   {% for ad in admin %}
                     {% ifequal sup.id ad.super_id %}
-                      <span class="name mb-0 text-sm">{{ ad.pic }}</span>
+                      {% if ad.pic == None or ad.pic == "" %}
+                        <img class="avatar rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
+                      {% else %}
+                        <img src="{{ ad.pic }}" class="avatar rounded-circle">
+                      {% endif %}
                     {% endifequal %}
                   {% endfor %}
                 </th>

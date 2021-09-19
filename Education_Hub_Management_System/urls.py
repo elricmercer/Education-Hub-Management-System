@@ -99,4 +99,10 @@ urlpatterns = [
     path('tutor_edit_schedule/<str:schID>', TutorViews.EditSchedule, name="tutor_edit_schedule"),
     path('tutor_edit_schedule_save', TutorViews.SaveEditSchedule, name="tutor_edit_schedule_save"),
     path('tutor_delete_schedule/<str:schID>', TutorViews.DeleteSchedule, name="tutor_delete_schedule"),
+    path('tutor_view_cert_courses', TutorViews.ViewCertCourses, name="tutor_view_cert_courses"),
+    path('tutor_apply_cert_course_save', TutorViews.SaveAppliedCourse, name="tutor_apply_cert_course_save"),
+    path('tutor_view_earnings', TutorViews.ViewEarnings, name="tutor_view_earnings"),
+    path('tutor_contact_us', TutorViews.ViewContactUs, name="tutor_contact_us"),
+    path('tutor_contact_us_save', TutorViews.SaveContactUs, name="tutor_contact_us_save"),
+    path('tutor_view_inquiries', TutorViews.ViewInquiries, name="tutor_view_inquiries"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

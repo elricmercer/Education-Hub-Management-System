@@ -1,0 +1,132 @@
+{% extends 'Tutor_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Contact Us</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!--HEAD-->
+<div class="header bg-primary">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-2 col-6 text-left">
+            <a href="{% url 'tutor_view_inquiries' %}" class="btn btn-sm btn-neutral">View Inquiries</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-xl-8 order-xl-1">
+  <div class="card" style="left: 110px; top: 10px;">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h3 class="mb-0">Contact Us</h3>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form id="contactUs" role="form">
+        {% csrf_token %}
+        <div class="pl-lg-4">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Issue Title:</label>
+                <input class="form-control" type="text" name="issueTitle" maxlength="255" placeholder="eg: Course application issue" required="required">
+                <div id="issueTitle"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label" style="margin-bottom: 10px;">Description:</label>
+                <textarea name="description" class="form-control" placeholder="eg: I am unable to......." required="required" rows="10"></textarea>
+                <div id="description"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="success"></div>
+        <div id="failed"></div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+    $("#contactUs").on("submit", function(event)
+    {
+      event.preventDefault()
+      var contactUsForm = $("#contactUs")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'tutor_contact_us_save' %}",
+        data: contactUsForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //SENT
+          if(response=="success")
+          {
+            $("#success").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Sent</div>'
+            )
+          }
+          else
+          {
+            $("#failed").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To send</div>'
+            )
+          }
+          else
+          {
+            $("#failed").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+  })
+</script>
+{% endblock custom_js %}

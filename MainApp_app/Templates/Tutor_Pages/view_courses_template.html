@@ -1,0 +1,257 @@
+{% extends 'Tutor_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Certified Courses</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!--HEAD-->
+<div class="header bg-primary pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-1 col-6 text-left">
+            <a href="#ModalApplyToCourse" data-toggle="modal" class="btn btn-sm btn-neutral">Apply</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--APPLY TO COURSE MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalApplyToCourse">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Course Application Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="applyCourse" role="form">
+            {% csrf_token %}
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Course Name:</label>
+                    <select name="courseID" class="form-control" required="required">
+                        <option disabled="disabled" selected="selected">Select</option>
+                        {% for cour in course %}
+                            <option value="{{ cour.id }}">{{ cour.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="courseID"></div>
+                    <div id="courseID2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success"></div>
+            <div id="failed"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!--TABLE-->
+<div class="container-fluid mt--6">
+  <!-- Dark table -->
+  <div class="row">
+    <div class="col">
+      <div class="card bg-default shadow">
+        <div class="card-header bg-transparent border-0">
+          <h3 class="text-white mb-0">Certified Courses</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-dark table-flush">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Certification ID</th>
+                <th scope="col">Course ID</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Duration</th>
+              </tr>
+            </thead>
+            <tbody class="list">
+            {% for cert in certCourses %}
+              <tr>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ cert.id }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ cert.course_id }}</span>
+                </th>
+                <th scope="row">
+                  {% for cour in course %}
+                    {% ifequal cert.course_id cour.id %}
+                      <span class="name mb-0 text-sm">{{ cour.name }}</span>
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  {% for cour in course %}
+                    {% ifequal cert.course_id cour.id %}
+                      <span class="name mb-0 text-sm">{{ cour.duration }}</span>
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <nav aria-label="Page navigation">
+            {% if certCourses.has_other_pages %}
+              <ul class="pagination justify-content-end">
+                {% if certCourses.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ certCourses.previous_page_number }}" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for i in certCourses.paginator.page_range %}
+                  {% if certCourses.number == i %}
+                    <li class="page-item active"><a class="page-link">{{ i }}<a class="sr-only">(current)</a></a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if certCourses.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ certCourses.next_page_number }}">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link" tabindex="-1">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            {% endif %}
+          </nav>
+        </div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+    $("#applyCourse").on("submit", function(event)
+    {
+      event.preventDefault()
+      var applyCourseForm = $("#applyCourse")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'tutor_apply_cert_course_save' %}",
+        data: applyCourseForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //ALREADY CERTIFIED
+          if(response == "alreadyCertified")
+          {
+            $("#courseID").html
+            (
+              '<p style="color:red"><b>Error! Already certified</b></p>'
+            )
+          }
+          else
+          {
+            $("#courseID").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //ALREADY ON APPLY
+          if(response == "alreadyApplied")
+          {
+            $("#courseID2").html
+            (
+              '<p style="color:red"><b>Error! Already applied</b></p>'
+            )
+          }
+          else
+          {
+            $("#courseID2").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //APPLIED
+          if(response == "success")
+          {
+            $("#success").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Applied</div>'
+            )
+          }
+          else
+          {
+            $("#success").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response == "failed")
+          {
+            $("#failed").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To apply</div>'
+            )
+          }
+          else
+          {
+            $("#failed").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+  })
+</script>
+{% endblock custom_js %}

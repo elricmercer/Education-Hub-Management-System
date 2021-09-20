@@ -1,0 +1,184 @@
+{% extends 'Student_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Profile</title>
+{% endblock title_template %}
+{% load static %}
+{% block body_content_template %}
+<!--HEAD-->
+<div class="header pb-6 d-flex align-items-center" style="min-height: 250px; background-size: cover; background-position: center top;">
+  <!-- Mask -->
+  <span class="mask bg-gradient-default opacity-8"></span>
+  <!-- Header container -->
+  <div class="container-fluid d-flex align-items-center">
+    <div class="row">
+      <div class="col-lg-7 col-md-10">
+        <h1 class="display-2 text-white">Hello, {{ request.user.username }}</h1>
+      </div>
+    </div>
+  </div>
+</div>
+<!--BODY-->
+<div class="container-fluid mt--6">
+  <div class="row">
+    <div class="col-xl-4 order-xl-2">
+      <div class="card card-profile">
+        <div class="row justify-content-center">
+          <div class="col-lg-3 order-lg-2">
+            <div class="card-profile-image">
+              <a href="#">
+                {% if student.pic == None or student.pic == "" %}
+                  <img class="rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
+                {% else %}
+                  <img src="{{ student.pic }}" class="rounded-circle">
+                {% endif %}
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+
+        </div>
+        <div class="card-body pt-0">
+          <div class="row">
+            <div class="col">
+              <div class="card-profile-stats d-flex justify-content-center">
+
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <h5 class="h3">
+              {{ request.user.first_name }} {{ request.user.last_name }}
+            </h5>
+            <div class="h5 mt-4">
+              <i class="ni business_briefcase-24 mr-2">{{ role }}</i>
+            </div>
+            <div>
+              <i class="ni education_hat mr-2"></i>Education Institute Management System
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-8 order-xl-1">
+      <div class="card">
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h3 class="mb-0">Profile </h3>
+            </div>
+            <div class="col-4 text-right">
+              <a href="{% url 'student_edit_profile' %}" class="btn btn-sm btn-primary">Edit Profile</a>
+              <a href="#ModalProfilePic" class="btn btn-sm btn-primary" data-toggle="modal">Profile Pic</a>
+            </div>
+            <div class="modal fade" tabindex="-1" role="dialog" id="ModalProfilePic" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Profile Pic:</h5>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    <div class="modal-body">
+                      {% if student.pic == "" or student.pic == None %}
+                        <a type="button" class="btn btn-primary"  href="#ModalUploadPic" data-toggle="modal" data-dismiss="modal">Upload</a>
+                      {% else %}
+                        <button type="button" class="btn btn-primary" disabled="disabled">Upload</button>
+                      {% endif %}
+                      <a type="button" class="btn btn-danger" href="{% url 'student_remove_profile_pic' %}" onclick="return confirm('Are you sure you want to remove profile pic')">Remove</a>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal fade" tabindex="-1" role="dialog" id="ModalUploadPic">
+              <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Upload Profile Pic:</h5>
+                      <a type="button" class="btn btn-default" href="#ModalProfilePic" data-toggle="modal" data-dismiss="modal">Back</a>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    <form role="form" action="{% url 'student_profile_pic_save' %}" method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="modal-body">
+                        <label class="form-control-label">Upload</label>
+                        <input type="file" name="profilePic" class="form-control">
+                      </div>
+                      <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                      </div>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <form>
+            <h6 class="heading-small text-muted mb-4">User information</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Username</label>
+                    <input disabled="disabled" type="text" class="form-control" value="{{ request.user.username }}">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Email address</label>
+                    <input disabled="disabled" type="email" class="form-control" value="{{ request.user.email }}">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label">First Name</label>
+                    <input disabled="disabled" type="text" class="form-control" value="{{ request.user.first_name }}" placeholder="eg. John">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Last Name</label>
+                    <input disabled="disabled" type="text" class="form-control" value="{{ request.user.last_name }}" placeholder="eg. Doe">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Gender</label>
+                    <input disabled="disabled" type="text" class="form-control" value="{{ student.gender }}" placeholder="eg. Male">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Date of Birth</label>
+                    <input disabled="disabled" type="text" class="form-control" value="{{ student.dob }}" placeholder="eg. 01/01/1990">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Phone Number</label>
+                    <input disabled="disabled" type="text" class="form-control" value="{{ student.phone_no }}" placeholder="eg. 01234567890">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div class="form-group">
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+                {% endif %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}

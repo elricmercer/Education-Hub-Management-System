@@ -1,0 +1,131 @@
+{% extends 'Student_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Attendance</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!--HEAD-->
+<div class="header bg-primary pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-1 col-6 text-left">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--TABLE-->
+<div class="container-fluid mt--6">
+  <!-- Dark table -->
+  <div class="row">
+    <div class="col">
+      <div class="card bg-default shadow">
+        <div class="card-header bg-transparent border-0">
+          <h3 class="text-white mb-0">Attendance</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-dark table-flush">
+            <thead class="dark">
+              <tr>
+                <th scope="col">Enroll ID</th>
+                <th scope="col">Course ID</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Total Attendance %</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="list">
+            {% for studPercent in studentAttend %}
+              <tr>
+                <th scope="row">
+                    <span class="name mb-0 text-sm">{{ studPercent.enrollment_id }}</span>
+                </th>
+                <th scope="row">
+                  {% for enroll in enrollment %}
+                    {% ifequal studPercent.enrollment_id enroll.id %}
+                      <span class="name mb-0 text-sm">{{ enroll.course_id }}</span>
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <th scope="row">
+                  {% for enroll in enrollment %}
+                    {% ifequal studPercent.enrollment_id enroll.id %}
+                      {% for cour in course %}
+                        {% ifequal enroll.course_id cour.id %}
+                          <span class="name mb-0 text-sm">{{ cour.name }}</span>
+                        {% endifequal %}
+                      {% endfor %}
+                    {% endifequal %}
+                  {% endfor %}
+                </th>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <span class="completion mr-2">{{ studPercent.percent }}%</span>
+                      <div class="progress">
+                          <div class="progress-bar {{ studPercent.represent }}" role="progressbar" aria-valuenow="{{ studPercent.percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ studPercent.percent }}%;"></div>
+                      </div>
+                  </div>
+                </td>
+                <td class="text-right">
+                  <div class="dropdown">
+                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                      <a class="dropdown-item" href="{% url 'student_view_attendance_details' enrollID=studPercent.enrollment_id %}">View Details</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <nav aria-label="Page navigation">
+            {% if studentAttend.has_other_pages %}
+              <ul class="pagination justify-content-end">
+                {% if studentAttend.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ studentAttend.previous_page_number }}" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" tabindex="-1">
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for i in studentAttend.paginator.page_range %}
+                  {% if studentAttend.number == i %}
+                    <li class="page-item active"><a class="page-link">{{ i }}<a class="sr-only">(current)</a></a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if studentAttend.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ studentAttend.next_page_number }}">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link" tabindex="-1">
+                    <i class="fa fa-angle-right"></i>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            {% endif %}
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}

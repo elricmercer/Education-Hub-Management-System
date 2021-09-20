@@ -1,0 +1,114 @@
+{% extends 'Student_Pages/base_template.html' %}
+{% block title_template %}
+<title>Dashboard</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<!-- Header -->
+<!-- Header -->
+<div class="header bg-primary pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <!-- Card stats -->
+      <div class="row">
+        <div class="col-xl-3 col-md-6">
+          <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">Total Active Classes</h5>
+                  <span class="h2 font-weight-bold mb-0">#</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
+                    <i class="ni ni-hat-3"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--6">
+  <div class="row">
+    <div class="col-xl-6">
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <div class="container d-flex justify-container-center">
+          <div class="row">
+              <div class="col-md-12">
+                  <div id="attendancePie" style="width: 600px; height: 400px; margin-top: 50px"></div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="col-xl-6">
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <div class="container d-flex justify-container-center">
+          <div class="row">
+              <div class="col-md-12">
+                  <div id="paymentPie" style="width: 600px; height: 400px; margin-top: 50px"></div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="footer pt-0" style="margin-top: 70px">
+  <div class="row align-items-center justify-content-lg-between">
+    <div class="col-lg-6">
+      <div class="copyright text-center  text-lg-left  text-muted" style="margin-left: 30px;">
+        2021 <a href="https://www.linkedin.com/in/alamjahirul" class="font-weight-bold ml-1" target="_blank">Jahirul Alam Bhuyan</a>
+      </div>
+    </div>
+  </div>
+</footer>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function(){
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawChart2);
+
+    function drawChart() {
+
+    var data = google.visualization.arrayToDataTable([
+    ['Task', 'Hours per Day'],
+    ['Present', {{ presentAttendCount }}],
+    ['Absent', {{ absentAttendCount }}]
+    ]);
+
+    var options = {
+    title: 'Attendance',
+    is3D:true
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('attendancePie'));
+
+    chart.draw(data, options);
+    }
+
+    function drawChart2() {
+
+    var data = google.visualization.arrayToDataTable([
+    ['Task', 'Hours per Day'],
+    ['Paid', {{ paid }}],
+    ['Outstanding', {{ outstanding }}]
+    ]);
+
+    var options = {
+    title: 'Payment',
+    is3D:true
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('paymentPie'));
+
+    chart.draw(data, options);
+    }
+});
+</script>
+{% endblock custom_js %}

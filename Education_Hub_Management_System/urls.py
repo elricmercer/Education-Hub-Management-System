@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 
 from Education_Hub_Management_System import settings
-from MainApp_app import views, AdminViews, SuperUserViews, TutorViews
+from MainApp_app import views, AdminViews, SuperUserViews, TutorViews, StudentViews
 
 urlpatterns = [
     # COMMON
@@ -84,6 +84,8 @@ urlpatterns = [
     path('admin_edit_class_save', AdminViews.SaveEditClass, name="admin_edit_class_save"),
     path('admin_view_inquiries', AdminViews.ViewInquiries, name="admin_view_inquiries"),
     path('admin_update_inquiry_status_save', AdminViews.UpdateInquiryStatus, name="admin_update_inquiry_status_save"),
+    path('admin_view_tutor_certify_request', AdminViews.ViewCertifyRequest, name="admin_view_tutor_certify_request"),
+    path('admin_tutor_certify_request_save', AdminViews.SaveCertifyRequest, name="admin_tutor_certify_request_save"),
 
     # TUTOR
     path('tutor_dashboard', TutorViews.Dashboard, name="tutor_dashboard"),
@@ -105,4 +107,21 @@ urlpatterns = [
     path('tutor_contact_us', TutorViews.ViewContactUs, name="tutor_contact_us"),
     path('tutor_contact_us_save', TutorViews.SaveContactUs, name="tutor_contact_us_save"),
     path('tutor_view_inquiries', TutorViews.ViewInquiries, name="tutor_view_inquiries"),
+
+    # STUDENT
+    path('student_view_profile', StudentViews.ViewProfile, name="student_view_profile"),
+    path('student_view_dashboard', StudentViews.ViewDashboard, name="student_view_dashboard"),
+    path('student_profile_pic_save', StudentViews.SaveProfilePic, name="student_profile_pic_save"),
+    path('student_remove_profile_pic', StudentViews.RemoveProfilePic, name="student_remove_profile_pic"),
+    path('student_edit_profile', StudentViews.EditProfile, name="student_edit_profile"),
+    path('student_edit_profile_save', StudentViews.SaveEditProfile, name="student_edit_profile_save"),
+    path('student_view_tutors', StudentViews.ViewTutors, name="student_view_tutors"),
+    path('student_view_classes', StudentViews.ViewClasses, name="student_view_classes"),
+    path('student_view_attendance', StudentViews.ViewAttendance, name="student_view_attendance"),
+    path('student_view_attendance_details/<str:enrollID>', StudentViews.ViewAttendanceDetails, name="student_view_attendance_details"),
+    path('student_view_payment', StudentViews.ViewPayment, name="student_view_payment"),
+    path('student_payment_save', StudentViews.SavePayment, name="student_payment_save"),
+    path('student_view_contact_us', StudentViews.ViewContactUs, name="student_view_contact_us"),
+    path('student_contact_us_save', StudentViews.SaveContactUs, name="student_contact_us_save"),
+    path('student_view_inquiries', StudentViews.ViewInquiries, name="student_view_inquiries"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

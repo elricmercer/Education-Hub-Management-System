@@ -1,0 +1,46 @@
+<ul class="navbar-nav navbar-fixed-left">
+    {% url 'student_view_dashboard' as student_view_dashboard %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == student_view_dashboard %} active {% endif %}" href="{{ student_view_dashboard }}">
+        <i class="ni ni-chart-pie-35 text-orange"></i>
+        <span class="nav-link-text">Dashboard</span>
+      </a>
+    </li>
+    {% url 'student_view_tutors' as student_view_tutors %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == student_view_tutors %} active {% endif %}" href="{{ student_view_tutors }}">
+        <i class="ni ni-single-02 text-primary"></i>
+        <span class="nav-link-text">Tutor</span>
+      </a>
+    </li>
+    {% url 'student_view_classes' as student_view_classes %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == student_view_classes %} active {% endif %}" href="{{ student_view_classes }}">
+        <i class="ni ni-books text-primary"></i>
+        <span class="nav-link-text">Classes</span>
+      </a>
+    </li>
+    {% url 'student_view_attendance' as student_view_attendance %}
+    {% url 'student_view_attendance_details' enrollID=id as student_view_attendance_details %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == student_view_attendance %} active {% endif %}
+        {% if request.path == student_view_attendance_details %} active {% endif %}" href="{{ student_view_attendance }}">
+        <i class="ni ni-check-bold text-red"></i>
+        <span class="nav-link-text">Attendance</span>
+      </a>
+    </li>
+    {% url 'student_view_payment' as student_view_payment %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == student_view_payment %} active {% endif %}" href="{{ student_view_payment }}">
+        <i class="ni ni-money-coins text-info"></i>
+        <span class="nav-link-text">Payments</span>
+      </a>
+    </li>
+    {% url 'student_view_contact_us' as student_view_contact_us %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.path == student_view_contact_us %} active {% endif %}" href="{{ student_view_contact_us }}">
+        <i class="ni ni-mobile-button text-green"></i>
+        <span class="nav-link-text">Contact Us</span>
+      </a>
+    </li>
+</ul>

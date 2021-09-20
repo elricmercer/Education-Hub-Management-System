@@ -1,28 +1,81 @@
 import datetime
 import json
 import os
-import random
-import string
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.validators import URLValidator
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 
 from Education_Hub_Management_System.settings import BASE_DIR
 from MainApp_app.models import Admin, SuperUser, Student, StudentPayment, Tutor, TutorEarnings, Course, \
     TutorsCertifiedToCourse, TutorApplyToCertifyToCourse, Schedule, Enrollment, EnrolledStudents, EnrollmentDays, \
-    EnrollmentTime, CompanyEarnings, ContactUs
+    EnrollmentTime, ContactUs, CompanyEarnings
 
 
 # DASHBOARD SECTION
 def Dashboard(request):
-    return render(request, "Admin_Pages/dashboard_template.html")
+    totalStudents = Student.objects.all().count()
+    totalTutors = Tutor.objects.all().count()
+    totalAdmins = SuperUser.objects.filter(user_type="2").count()
+    totalSchedules = Schedule.objects.all().count()
+    totalClasses = Enrollment.objects.all().count()
+    totalCourses = Course.objects.all().count()
+    currentDate = datetime.date.today()
+    year = str(currentDate.year)
+
+    # SALES CHART
+    earnings = CompanyEarnings.objects.filter(year=year)
+    janTotal = 0
+    febTotal = 0
+    marTotal = 0
+    aprTotal = 0
+    mayTotal = 0
+    junTotal = 0
+    julTotal = 0
+    augTotal = 0
+    sepTotal = 0
+    octTotal = 0
+    novTotal = 0
+    decTotal = 0
+
+    for earn in earnings:
+        if earn.month == "Jan":
+            janTotal = janTotal + float(earn.earned)
+        if earn.month == "Feb":
+            febTotal = febTotal + float(earn.earned)
+        if earn.month == "Mar":
+            marTotal = marTotal + float(earn.earned)
+        if earn.month == "Apr":
+            aprTotal = aprTotal + float(earn.earned)
+        if earn.month == "May":
+            mayTotal = mayTotal + float(earn.earned)
+        if earn.month == "Jun":
+            junTotal = junTotal + float(earn.earned)
+        if earn.month == "Jul":
+            julTotal = julTotal + float(earn.earned)
+        if earn.month == "Aug":
+            augTotal = augTotal + float(earn.earned)
+        if earn.month == "Sep":
+            sepTotal = sepTotal + float(earn.earned)
+        if earn.month == "Oct":
+            octTotal = octTotal + float(earn.earned)
+        if earn.month == "Nov":
+            novTotal = novTotal + float(earn.earned)
+        if earn.month == "Dec":
+            decTotal = decTotal + float(earn.earned)
+
+    context = {"totalStudents": totalStudents, "totalTutors": totalTutors, "totalAdmins": totalAdmins,
+               "totalSchedules": totalSchedules, "totalClasses": totalClasses, "totalCourses": totalCourses,
+               "year": year, "janTotal": janTotal, "febTotal": febTotal, "marTotal": marTotal, "aprTotal": aprTotal,
+               "mayTotal": mayTotal, "junTotal": junTotal, "julTotal": julTotal, "augTotal": augTotal,
+               "sepTotal": sepTotal,
+               "octTotal": octTotal, "novTotal": novTotal, "decTotal": decTotal}
+    return render(request, "Admin_Pages/dashboard_template.html", context)
 
 
 # END OF DASHBOARD SECTION
@@ -697,6 +750,79 @@ def DeleteTutorCertification(request, certID, tutorID):
     except:
         messages.error(request, "Failed! To delete")
         return HttpResponseRedirect(reverse("admin_view_tutor_certifications", kwargs={"tutID": tutorID}))
+
+
+def ViewCertifyRequest(request):
+    certRequests = TutorApplyToCertifyToCourse.objects.all().order_by('-created_at')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(certRequests, 6)
+    tutor = Tutor.objects.all()
+    superUser = SuperUser.objects.all()
+    course = Course.objects.all()
+    admin = Admin.objects.all()
+    statusList = []
+    statusList.append("Pending")
+    statusList.append("Active")
+    statusList.append("Closed")
+
+    try:
+        certRequest = paginator.page(page)
+    except PageNotAnInteger:
+        certRequest = paginator.page(1)
+    except EmptyPage:
+        certRequest = paginator.page(paginator.num_pages)
+
+    context = {"certRequest": certRequest, "tutor": tutor, "superUser": superUser, "course": course, "admin": admin,
+               "statusList": statusList}
+    return render(request, "Admin_Pages/view_certify_requests_template.html", context)
+
+
+def SaveCertifyRequest(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            applicationID = request.POST.get("applicationID")
+            status = request.POST.get("status")
+            applicationCheck = TutorApplyToCertifyToCourse.objects.all()
+            admin = Admin.objects.all()
+            superUser = SuperUser.objects.all()
+            existsapplicationID = False
+            adminsApp = False
+
+            for app in applicationCheck:
+                if applicationID == str(app.id):
+                    existsapplicationID = True
+                    break
+
+            if not existsapplicationID:
+                return HttpResponse("applicationID")
+
+            for app in applicationCheck:
+                if applicationID == str(app.id):
+                    for ad in admin:
+                        if request.user.id == ad.super_id:
+                            if app.admin_id == ad.id:
+                                adminsApp = True
+
+            for sup in superUser:
+                if request.user.id == sup.id:
+                    if sup.user_type == "1":
+                        adminsApp = True
+
+            if not adminsApp:
+                return HttpResponse("failed")
+
+            try:
+                application = TutorApplyToCertifyToCourse.objects.get(id=applicationID)
+                application.status = status
+                application.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            messages.error(request, "Failed! To update")
+            return HttpResponseRedirect(reverse("admin_view_tutor_certify_request"))
 
 
 # END OF TUTOR SECTION
@@ -1532,4 +1658,4 @@ def UpdateInquiryStatus(request):
             return HttpResponseRedirect(reverse("admin_view_inquiries"))
 # END OF INQUIRY SECTION
 
-# NOTE: certify request part of tutor is incomplete | attendance is incomplete
+# NOTE: attendance is incomplete | work on all the dashboards

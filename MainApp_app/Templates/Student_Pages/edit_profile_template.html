@@ -1,0 +1,256 @@
+{% extends 'Student_Pages/base_template.html' %}
+{% block title_template %}
+    <title>Edit Profile</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<div class="col-xl-8 order-xl-1">
+  <div class="card" style="left: 110px; top: 10px;">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h3 class="mb-0">Edit Profile: {{ request.user.username}} </h3>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form role="form" id="editProfileForm">
+        {% csrf_token %}
+        <input type="hidden" name="currentUsername" value="{{ request.user.username }}">
+        <input type="hidden" name="currentEmail" value="{{ request.user.email }}">
+        <div class="pl-lg-4">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label">Username</label>
+                <input type="text" name="username" value="{{ request.user.username }}" class="form-control" maxlength="150" required="required">
+                <div id="username"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label">Email</label>
+                <input type="email" name="email" value="{{ request.user.email }}" class="form-control" maxlength="254" required="required">
+                <div id="email"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label">First Name</label>
+                <input type="text" name="firstName" value="{{ request.user.first_name }}" class="form-control" maxlength="150" required="required">
+                <div id="firstName"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label">Last Name</label>
+                <input type="text" name="lastName" value="{{ request.user.last_name }}" class="form-control" maxlength="150" required="required">
+                <div id="lastName"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label">Gender</label>
+                <select name="gender" class="form-control" required="required">
+                  <option>{{ student.gender }}</option>
+                  {% if "Male" == student.gender %}
+                    <option>Female</option>
+                    <option>Others</option>
+                  {% elif "Female" == student.gender %}
+                    <option>Male</option>
+                    <option>Others</option>
+                  {% else %}
+                    <option>Male</option>
+                    <option>Female</option>
+                  {% endif %}
+                </select>
+                <div id="gender"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label">Date of Birth</label>
+                <input type="date" name="dob" value="{{ student.dob }}" class="form-control" required="required">
+                <div id="dob"></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label class="form-control-label">Phone Number</label>
+                <input type="text" name="phoneNo" value="{{ student.phone_no }}" class="form-control" maxlength="20" required="required">
+                <div id="phoneNo"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="success"></div>
+        <div id="failed"></div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Edit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+      $("#editProfileForm").on("submit", function(event)
+      {
+        event.preventDefault()
+        var editProfileForm = $("#editProfileForm")
+        console.log("calling ajax")
+
+        $.ajax
+        ({
+          type: "POST",
+          url: "{% url 'student_edit_profile_save' %}",
+          data: editProfileForm.serialize(),
+
+          success: function(response)
+          {
+            console.log(response)
+
+            //USERNAME
+            if(response == "username")
+            {
+              $("#username").html
+              (
+                '<p style="color:red"><b>Error! Username taken</b></p>'
+              )
+            }
+            else
+            {
+              $("#username").html
+              (
+                '<p></p>'
+              )
+            }
+
+            //EMAIL
+            if(response == "email")
+            {
+              $("#email").html
+              (
+                '<p style="color:red"><b>Error! Email already exists</b></p>'
+              )
+            }
+            else
+            {
+              $("#email").html
+              (
+                '<p></p>'
+              )
+            }
+
+            //FIRSTNAME
+            if(response == "firstName")
+            {
+              $("#firstName").html
+              (
+                '<p style="color:red"><b>Error! Alphabets only</b></p>'
+              )
+            }
+            else
+            {
+              $("#firstName").html
+              (
+                '<p></p>'
+              )
+            }
+
+            //LASTNAME
+            if(response == "lastName")
+            {
+              $("#lastName").html
+              (
+                '<p style="color:red"><b>Error! Alphabets only</b></p>'
+              )
+            }
+            else
+            {
+              $("#lastName").html
+              (
+                '<p></p>'
+              )
+            }
+
+            //PHONE NO
+            if(response == "phoneNo2")
+            {
+              $("#phoneNo").html
+              (
+                '<p style="color:red"><b>Error! Enter correct phone number</b></p>'
+              )
+            }
+            else if(response == "phoneNo3")
+            {
+              $("#phoneNo").html
+              (
+                '<p style="color:red"><b>Error! Phone no length minimum 10 digits</b></p>'
+              )
+            }
+            else
+            {
+              $("#phoneNo").html
+              (
+                '<p></p>'
+              )
+            }
+
+            //EDITED
+            if(response == "success")
+            {
+              $("#success").html
+              (
+                '<div class="alert alert-success" style="margin-top: 10px">Edited</div>'
+              )
+            }
+            else
+            {
+              $("#success").html
+              (
+                '<div></div>'
+              )
+            }
+
+            //FAILED
+            if(response == "failed")
+            {
+              $("#failed").html
+              (
+                '<div class="alert alert-danger" style="margin-top: 10px">Failed to Edit</div>'
+              )
+            }
+            else
+            {
+              $("#failed").html
+              (
+                '<div></div>'
+              )
+            }
+          },
+          error: function(response)
+          {
+            console.log(response)
+          }
+        })
+      })
+  })
+</script>
+{% endblock custom_js %}

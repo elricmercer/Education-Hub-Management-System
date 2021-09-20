@@ -4,7 +4,7 @@
 /email
 /MainApp_app/__pycache__
 /Education_Hub_Management_System/__pycache__
-MainApp_app/migrations/__pycache__
+/MainApp_app/migrations/__pycache__
 *.log
 *.pot
 *.pyc

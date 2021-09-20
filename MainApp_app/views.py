@@ -26,7 +26,7 @@ def DoLogin(request):
             elif user.user_type == "3":
                 return HttpResponseRedirect(reverse("tutor_dashboard"))
             elif user.user_type == "4":
-                return HttpResponse("Student login")
+                return HttpResponseRedirect(reverse("student_view_dashboard"))
             else:
                 messages.error(request, "Invalid Login Details")
                 return HttpResponseRedirect("/")

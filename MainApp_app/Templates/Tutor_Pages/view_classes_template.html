@@ -8,8 +8,9 @@
   <div class="container-fluid">
     <div class="header-body">
       <div class="row align-items-center py-4">
-        <div class="col-lg-11 col-6 text-left">
-            <a href="#ModalTakeAttendance" data-toggle="modal" class="btn btn-sm btn-neutral">Mark Attendance</a>
+        <div class="col-lg-4 col-6 text-left">
+          <a href="#ModalTakeAttendance" data-toggle="modal" class="btn btn-sm btn-neutral">Mark Attendance</a>
+          <a href="#ModalMarkedAttendance" data-toggle="modal" class="btn btn-sm btn-neutral">View Marked Attendance</a>
         </div>
       </div>
     </div>
@@ -24,37 +25,82 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
         <div class="modal-body">
-          <form id="addClass" role="form">
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
+                    <select name="enrollID" class="form-control" required="required" id="enrollID">
+                      <option selected="selected" disabled="disabled">Select</option>
+                      {% for enroll in enrollments %}
+                        <option value="{{ enroll.id }}">{{ enroll.id }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Start Time:</label>
+                    <input type="time" name="startTime" class="form-control" required="required" id="startTime">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Duration:</label>
+                    <select name="duration" class="form-control" required="required" id="duration">
+                      <option selected="selected" disabled="disabled">Select</option>
+                      <option>30 mins</option>
+                      <option>45 mins</option>
+                      <option>1 hr</option>
+                      <option>1 hr 30 mins</option>
+                      <option>1 hr 45 mins</option>
+                      <option>2 hrs</option>
+                      <option>2 hrs 30 mins</option>
+                      <option>2hrs 45 mins</option>
+                      <option>3 hrs</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="button" class="btn btn-primary" id="showStudents">Show Students</button>
+            </div>
+            <div class="pl-lg-4">
+              <div class="row" id="showingStudents"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+<!--MARKED ATTENDANCE MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalMarkedAttendance">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Marked Attendance Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form role="form" id="markedAttendance">
             {% csrf_token %}
             <div class="pl-lg-4">
               <div class="row">
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label" style="margin-bottom: 10px;">Class ID:</label>
-
-                    <div id="enrollID"></div>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="form-control-label" style="margin-bottom: 10px;">Start Time:</label>
-
-                    <div id="startTime"></div>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="form-control-label" style="margin-bottom: 10px;">Duration:</label>
-
-                    <div id="duration"></div>
+                    <select name="enrollID" class="form-control" required="required">
+                      <option selected="selected" disabled="disabled">Select</option>
+                      {% for enroll in enrollments %}
+                        <option value="{{ enroll.id }}">{{ enroll.id }}</option>
+                      {% endfor %}
+                    </select>
                   </div>
                 </div>
               </div>
             </div>
-            <div id="success"></div>
-            <div id="failed"></div>
             <div class="card-footer">
-              <button type="submit" class="btn btn-primary">Show Students</button>
+              <button type="submit" class="btn btn-primary">Enter</button>
             </div>
           </form>
         </div>
@@ -255,3 +301,111 @@
   </div>
 </div>
 {% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+    $("#showStudents").click(function()
+    {
+      var enrollID = $("#enrollID").val()
+      var startTime = $("#startTime").val()
+      var duration = $("#duration").val()
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'tutor_get_students_for_attendance' %}",
+        data:{enrollID:enrollID, startTime:startTime, duration:duration}
+      })
+      .done(function(response)
+      {
+        var studentJsonData = JSON.parse(response)
+        console.log(studentJsonData)
+        var showingStudentsHTMLData=""
+        showingStudentsHTMLData+="<div class='col-lg-6'>"
+        showingStudentsHTMLData+="<div class='form-group'>"
+
+        if (response!=null)
+        {
+          showingStudentsHTMLData+="<h2>Students:</h2>"
+          showingStudentsHTMLData+="<h5 style='margin-bottom: 30px'>Select the student(s) to mark them present:</h5>"
+        }
+
+        for (key in studentJsonData)
+        {
+          showingStudentsHTMLData+="<div class='form-check' style='bottom: 10px'><input type='checkbox' name='studentDataArr[]' class='form-check-input' value='"+studentJsonData[key]['id']+"'><h4>"+studentJsonData[key]['name']+"</h4></div>"
+        }
+
+        showingStudentsHTMLData+="<div class='form-group'>"
+        showingStudentsHTMLData+="<button type='button' class='btn btn-primary' id='saveAttendance'>Mark Attendance</button>"
+        showingStudentsHTMLData+="</div>"
+        showingStudentsHTMLData+="</div>"
+        showingStudentsHTMLData+="</div>"
+        $("#showingStudents").html(showingStudentsHTMLData);
+      })
+      .fail(function()
+      {
+        alert("ERROR! Cannot get student")
+      })
+
+      $(document).on("click","#saveAttendance", function()
+      {
+        console.log("Saving attendance data")
+        var finalAttendanceData=$("input[name='studentDataArr[]']").map(function()
+        {
+          if($(this).is(":checked"))
+          {
+            return {"id":$(this).val(), "status":"Present"}
+          }
+          else
+          {
+            return {"id":$(this).val(), "status":"Absent"}
+          }
+        }).get()
+        finalAttendanceData = JSON.stringify(finalAttendanceData)
+
+        $.ajax
+        ({
+          url:'{% url 'tutor_attendance_save' %}',
+          type:'POST',
+          data:{studentIDs:finalAttendanceData}
+        })
+        .done(function(response)
+        {
+          if(response=="ok")
+          {
+              location.href="{% url 'tutor_view_classes' %}"
+          }
+        })
+        .fail(function()
+        {
+          alert("Error! Marking attendance")
+        })
+      })
+    })
+    $("#markedAttendance").on("submit", function(event)
+    {
+      event.preventDefault()
+      var markedAttendanceForm = $("#markedAttendance")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'tutor_view_recorded_attendance' %}",
+        data: markedAttendanceForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response.url)
+          location.href = response.url
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+  })
+</script>
+{% endblock custom_js %}

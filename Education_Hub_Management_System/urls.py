@@ -107,6 +107,12 @@ urlpatterns = [
     path('tutor_contact_us', TutorViews.ViewContactUs, name="tutor_contact_us"),
     path('tutor_contact_us_save', TutorViews.SaveContactUs, name="tutor_contact_us_save"),
     path('tutor_view_inquiries', TutorViews.ViewInquiries, name="tutor_view_inquiries"),
+    path('tutor_get_students_for_attendance', TutorViews.GetStudentsForAttendance, name="tutor_get_students_for_attendance"),
+    path('tutor_attendance_save', TutorViews.SaveStudentAttendance, name="tutor_attendance_save"),
+    path('tutor_view_recorded_attendance', TutorViews.ViewRecordedAttendance, name="tutor_view_recorded_attendance"),
+    path('tutor_view_marked_attendance/<str:enrollID>', TutorViews.ViewMarkedAttendance, name="tutor_view_marked_attendance"),
+    path('tutor_edit_attendance/<str:attendID>', TutorViews.EditAttendance, name="tutor_edit_attendance"),
+    path('tutor_edit_attendance_save', TutorViews.SaveEditAttendance, name="tutor_edit_attendance_save"),
 
     # STUDENT
     path('student_view_profile', StudentViews.ViewProfile, name="student_view_profile"),

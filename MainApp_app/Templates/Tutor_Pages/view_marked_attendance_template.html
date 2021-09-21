@@ -1,6 +1,6 @@
-{% extends 'Student_Pages/base_template.html' %}
+{% extends 'Tutor_Pages/base_template.html' %}
 {% block title_template %}
-    <title>Attendance Details</title>
+    <title>Classes</title>
 {% endblock title_template %}
 {% block body_content_template %}
 <!--HEAD-->
@@ -21,7 +21,7 @@
     <div class="col">
       <div class="card bg-default shadow">
         <div class="card-header bg-transparent border-0">
-          <h3 class="text-white mb-0">Attendance Details</h3>
+          <h3 class="text-white mb-0">Attendances</h3>
         </div>
         <div class="table-responsive">
           <table class="table align-items-center table-dark table-flush">
@@ -31,49 +31,44 @@
                 <th scope="col">Date</th>
                 <th scope="col">Start Time</th>
                 <th scope="col">Duration</th>
-                <th scope="col">Status</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody class="list">
-            {% for attendStud in attendanceStud %}
+            {% for attend in attendances %}
               <tr>
                 <th scope="row">
-                    <span class="name mb-0 text-sm">{{ attendStud.attendance_id }}</span>
+                  <span class="name mb-0 text-sm">{{ attend.id }}</span>
                 </th>
                 <th scope="row">
-                  {% for attend in attendance %}
-                    {% ifequal attendStud.attendance_id attend.id %}
-                      <span class="name mb-0 text-sm">{{ attend.date }}</span>
-                    {% endifequal %}
-                  {% endfor %}
+                  <span class="name mb-0 text-sm">{{ attend.date }}</span>
                 </th>
                 <th scope="row">
-                  {% for attend in attendance %}
-                    {% ifequal attendStud.attendance_id attend.id %}
-                      <span class="name mb-0 text-sm">{{ attend.start_time }}</span>
-                    {% endifequal %}
-                  {% endfor %}
+                  <span class="name mb-0 text-sm">{{ attend.start_time }}</span>
                 </th>
                 <th scope="row">
-                  {% for attend in attendance %}
-                    {% ifequal attendStud.attendance_id attend.id %}
-                      <span class="name mb-0 text-sm">{{ attend.duration }}</span>
-                    {% endifequal %}
-                  {% endfor %}
+                  <span class="name mb-0 text-sm">{{ attend.duration }}</span>
                 </th>
-                <th scope="row">
-                    <span class="name mb-0 text-sm">{{ attendStud.status }}</span>
-                </th>
+                <td class="text-right">
+                  <div class="dropdown">
+                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                        <a class="dropdown-item" href="{% url 'tutor_edit_attendance' attendID=attend.id %}">Edit</a>
+                    </div>
+                  </div>
+                </td>
               </tr>
             {% endfor %}
             </tbody>
           </table>
           <nav aria-label="Page navigation">
-            {% if attendanceStud.has_other_pages %}
+            {% if attendances.has_other_pages %}
               <ul class="pagination justify-content-end">
-                {% if attendanceStud.has_previous %}
+                {% if attendances.has_previous %}
                   <li class="page-item">
-                    <a class="page-link" href="?page={{ attendanceStud.previous_page_number }}" tabindex="-1">
+                    <a class="page-link" href="?page={{ attendances.previous_page_number }}" tabindex="-1">
                       <i class="fa fa-angle-left"></i>
                       <span class="sr-only">Previous</span>
                     </a>
@@ -86,16 +81,16 @@
                     </a>
                   </li>
                 {% endif %}
-                {% for i in attendanceStud.paginator.page_range %}
-                  {% if attendanceStud.number == i %}
+                {% for i in attendances.paginator.page_range %}
+                  {% if attendances.number == i %}
                     <li class="page-item active"><a class="page-link">{{ i }}<a class="sr-only">(current)</a></a></li>
                   {% else %}
                     <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                   {% endif %}
                 {% endfor %}
-                {% if attendanceStud.has_next %}
+                {% if attendances.has_next %}
                 <li class="page-item">
-                  <a class="page-link" href="?page={{ attendanceStud.next_page_number }}">
+                  <a class="page-link" href="?page={{ attendances.next_page_number }}">
                     <i class="fa fa-angle-right"></i>
                     <span class="sr-only">Next</span>
                   </a>
@@ -112,8 +107,27 @@
             {% endif %}
           </nav>
         </div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>
 </div>
 {% endblock body_content_template %}
+{% block custom_js %}
+<script>
+
+</script>
+{% endblock custom_js %}

@@ -140,7 +140,29 @@ def SaveEditProfile(request):
 
 # DASHBOARD SECTION
 def ViewDashboard(request):
-    return render(request, "Student_Pages/view_dashboard_template.html")
+    student = Student.objects.get(super_id=request.user.id)
+    enrollmentStudents = EnrolledStudents.objects.filter(student_id=student.id)
+    enrollment = Enrollment.objects.all()
+    totalActiveClasses = 0
+    for enrollStud in enrollmentStudents:
+        for enroll in enrollment:
+            if enrollStud.enrollment_id == enroll.id:
+                if enroll.status == "Active":
+                    totalActiveClasses = totalActiveClasses+1
+
+    presentAttendCount = AttendanceStudent.objects.filter(student_id=student.id, status="Present").count()
+    absentAttendCount = AttendanceStudent.objects.filter(student_id=student.id, status="Absent").count()
+    outstanding = 0
+    paid = 0
+    payment = StudentPayment.objects.filter(student_id=student.id)
+
+    for pay in payment:
+        outstanding = outstanding+float(pay.outstanding)
+        paid = paid+float(pay.paid)
+
+    context = {"totalActiveClasses": totalActiveClasses, "presentAttendCount": presentAttendCount,
+               "absentAttendCount": absentAttendCount, "outstanding": outstanding, "paid": paid}
+    return render(request, "Student_Pages/view_dashboard_template.html", context)
 # END OF DASHBOARD SECTION
 
 
@@ -228,7 +250,7 @@ def ViewAttendanceDetails(request, enrollID):
         attendanceStud = paginator.page(paginator.num_pages)
 
     context = {"attendanceStud": attendanceStud, "attendance": attendance, "id": enrollID}
-    return render(request, "Student_Pages/", context)
+    return render(request, "Student_Pages/view_attendance_details_template.html", context)
 # END OF ATTENDANCE SECTION
 
 

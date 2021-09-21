@@ -1,0 +1,80 @@
+{% extends 'Tutor_Pages/base_template.html' %}
+{% load static %}
+{% block title_template %}
+    <title>Edit Attendance</title>
+{% endblock title_template %}
+{% block body_content_template %}
+<div class="col-xl-8 order-xl-1">
+  <div class="card" style="left: 110px; top: 10px;">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-8">
+          <h3 class="mb-0">Edit Attendance ID: {{ id }} </h3>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+<!--      Form-->
+    <form role="form" action="{% url 'tutor_edit_attendance_save' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="attendanceID" value="{{ id }}">
+        <div class="pl-lg-4">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="form-group">
+                  <label>Student Name:</label>
+                {% for attendStuds in attendanceStud %}
+                    <input type="hidden" name="studentID[]" value="{{ attendStuds.student_id }}">
+                    {% for studs in students %}
+                        {% ifequal attendStuds.student_id studs.id %}
+                            {% for cus in superUser %}
+                                {% ifequal studs.super_id cus.id %}
+                                    <input type="text" disabled="disabled" value="{{ cus.first_name }} {{ cus.last_name }}" class="form-control" style="margin-bottom: 10px;">
+                                {% endifequal %}
+                            {% endfor %}
+                        {% endifequal %}
+                    {% endfor %}
+                {% endfor %}
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label>Status:</label>
+                {% for attendStuds in attendanceStud %}
+                <select name="status[]" class="form-control" style="margin-bottom: 10px;">
+                    <option selected="selected" value="{{ attendStuds.status }}">{{ attendStuds.status }}</option>
+                    {% ifequal attendStuds.status present %}
+                        <option value="Absent">Absent</option>
+                    {% endifequal %}
+                    {% ifequal attendStuds.status absent %}
+                        <option value="Present">Present</option>
+                    {% endifequal %}
+                </select>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          {% if messages %}
+          <div>
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div class="alert alert-danger" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+              <div class="alert alert-success" style="margin-top: 10px">{{ message }}</div>
+              {% endif %}
+              {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary">Edit</button>
+        </div>
+    </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock body_content_template %}

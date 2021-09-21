@@ -816,6 +816,7 @@ def SaveCertifyRequest(request):
             try:
                 application = TutorApplyToCertifyToCourse.objects.get(id=applicationID)
                 application.status = status
+                application.admin_id = request.user.id
                 application.save()
                 return HttpResponse("success")
             except:
@@ -1649,6 +1650,7 @@ def UpdateInquiryStatus(request):
             try:
                 inquiry = ContactUs.objects.get(id=inquiryID)
                 inquiry.status = status
+                inquiry.admin_id = request.user.id
                 inquiry.save()
                 return HttpResponse("success")
             except:
@@ -1658,4 +1660,4 @@ def UpdateInquiryStatus(request):
             return HttpResponseRedirect(reverse("admin_view_inquiries"))
 # END OF INQUIRY SECTION
 
-# NOTE: attendance is incomplete | work on all the dashboards
+# NOTE: payments for both student and tutor

@@ -14,7 +14,7 @@
           <a href="#ModalPaymentTutor" data-toggle="modal" class="btn btn-sm btn-neutral">Payment</a>
           <a href="#ModalTutorCertification" class="btn btn-sm btn-neutral" data-toggle="modal">Certification</a>
           {% if certRequestsPendingCount == 0 %}
-            <a href="#" class="btn btn-sm btn-neutral">Certify Requests</a>
+            <a href="{% url 'admin_view_tutor_certify_request' %}" class="btn btn-sm btn-neutral">Certify Requests</a>
           {% else %}
             <a href="{% url 'admin_view_tutor_certify_request' %}" class="btn btn-sm btn-neutral">{{ certRequestsPendingCount }} Certify Requests</a>
           {% endif %}

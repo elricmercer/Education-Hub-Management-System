@@ -1,21 +1,90 @@
 import datetime
+import json
 import os
 
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from Education_Hub_Management_System.settings import BASE_DIR
 from MainApp_app.models import Tutor, SuperUser, EnrolledStudents, Enrollment, Student, EnrollmentDays, EnrollmentTime, \
-    Course, TutorsCertifiedToCourse, Schedule, TutorApplyToCertifyToCourse, TutorEarnings, ContactUs, Admin
+    Course, TutorsCertifiedToCourse, Schedule, TutorApplyToCertifyToCourse, TutorEarnings, ContactUs, Admin, Attendance, \
+    AttendanceStudent, AttendancePercent
 
 
 # DASHBOARD SECTION
 def Dashboard(request):
-    return render(request, "Tutor_Pages/dashboard_template.html")
+    tutor = Tutor.objects.get(super_id=request.user.id)
+    enrollment = Enrollment.objects.filter(tutor_id=tutor.id)
+    enrollmentStuds = EnrolledStudents.objects.all()
+    studentList = []
+
+    for enroll in enrollment:
+        for enrollStuds in enrollmentStuds:
+            if enroll.id == enrollStuds.enrollment_id:
+                studentList.append(enrollStuds.student_id)
+
+    uniqueVals = set(studentList)
+    totalStudents = len(uniqueVals)
+    totalSchedules = Schedule.objects.filter(tutor_id=tutor.id).count()
+    totalClasses = Enrollment.objects.filter(tutor_id=tutor.id).count()
+    totalCourses = TutorsCertifiedToCourse.objects.filter(tutor_id=tutor.id).count()
+    currentDate = datetime.date.today()
+    year = str(currentDate.year)
+
+    # SALES CHART
+    earnings = TutorEarnings.objects.filter(tutor_id=tutor.id, year=year)
+    janTotal = 0
+    febTotal = 0
+    marTotal = 0
+    aprTotal = 0
+    mayTotal = 0
+    junTotal = 0
+    julTotal = 0
+    augTotal = 0
+    sepTotal = 0
+    octTotal = 0
+    novTotal = 0
+    decTotal = 0
+
+    for earn in earnings:
+        if earn.month == "Jan":
+            janTotal = janTotal + float(earn.earned)
+        if earn.month == "Feb":
+            febTotal = febTotal + float(earn.earned)
+        if earn.month == "Mar":
+            marTotal = marTotal + float(earn.earned)
+        if earn.month == "Apr":
+            aprTotal = aprTotal + float(earn.earned)
+        if earn.month == "May":
+            mayTotal = mayTotal + float(earn.earned)
+        if earn.month == "Jun":
+            junTotal = junTotal + float(earn.earned)
+        if earn.month == "Jul":
+            julTotal = julTotal + float(earn.earned)
+        if earn.month == "Aug":
+            augTotal = augTotal + float(earn.earned)
+        if earn.month == "Sep":
+            sepTotal = sepTotal + float(earn.earned)
+        if earn.month == "Oct":
+            octTotal = octTotal + float(earn.earned)
+        if earn.month == "Nov":
+            novTotal = novTotal + float(earn.earned)
+        if earn.month == "Dec":
+            decTotal = decTotal + float(earn.earned)
+
+    context = {"totalStudents": totalStudents, "totalSchedules": totalSchedules, "totalClasses": totalClasses,
+               "totalCourses": totalCourses, "year": year, "janTotal": janTotal, "febTotal": febTotal,
+               "marTotal": marTotal,
+               "aprTotal": aprTotal, "mayTotal": mayTotal, "junTotal": junTotal, "julTotal": julTotal,
+               "augTotal": augTotal, "sepTotal": sepTotal, "octTotal": octTotal, "novTotal": novTotal,
+               "decTotal": decTotal}
+
+    return render(request, "Tutor_Pages/dashboard_template.html", context)
 
 
 # END OF DASHBOARD SECTION
@@ -207,6 +276,192 @@ def ViewClasses(request):
     return render(request, "Tutor_Pages/view_classes_template.html", context)
 
 
+@csrf_exempt
+def GetStudentsForAttendance(request):
+    enrollID = request.POST.get("enrollID")
+    startTime = request.POST.get("startTime")
+    duration = request.POST.get("duration")
+    request.session['enrollID'] = enrollID
+    request.session['startTime'] = startTime
+    request.session['duration'] = duration
+    enrollStudents = EnrolledStudents.objects.filter(enrollment_id=enrollID)
+    students = Student.objects.all()
+    studentsList = []
+
+    for enroll in enrollStudents:
+        for studs in students:
+            if enroll.student_id == studs.id:
+                studSmallData = {"id": studs.id, "name": studs.super.first_name + " " + studs.super.last_name}
+                studentsList.append(studSmallData)
+
+    return JsonResponse(json.dumps(studentsList), content_type="application/json", safe=False)
+
+
+@csrf_exempt
+def SaveStudentAttendance(request):
+    enrollID = request.session['enrollID']
+    startTime = request.session['startTime']
+    duration = request.session['duration']
+    currentDate = datetime.date.today()
+    enrollment = Enrollment.objects.get(id=enrollID)
+    tutorID = enrollment.tutor_id
+    studentIDs = request.POST.get("studentIDs")
+    studentDataJson = json.loads(studentIDs)
+    attendance = Attendance(date=currentDate, start_time=startTime, enrollment_id=enrollID, tutor_id=tutorID,
+                            duration=duration)
+    attendance.save()
+
+    for studs in studentDataJson:
+        attendanceStudent = AttendanceStudent(status=studs['status'], attendance_id=attendance.id,
+                                              student_id=studs['id'])
+        attendanceStudent.save()
+
+    attendances = Attendance.objects.filter(enrollment_id=enrollID)
+    attendancesStud = AttendanceStudent.objects.all()
+
+    for studs2 in studentDataJson:
+        present = 0
+        absent = 0
+        for attend in attendances:
+            for attendStud in attendancesStud:
+                if attend.id == attendStud.attendance_id:
+                    if attendStud.student_id == int(studs2['id']):
+                        if attendStud.status == "Present":
+                            present = present + 1
+                        else:
+                            absent = absent + 1
+        attendPercent = ((present / (present + absent)) * 100)
+        represent = ""
+        if attendPercent == 100.0:
+            represent = "bg-success"
+        elif 80.0 <= attendPercent < 100.0:
+            represent = "bg-info"
+        elif 50.0 <= attendPercent < 80.0:
+            represent = "bg-warning"
+        elif attendPercent < 50.0:
+            represent = "bg-danger"
+
+        try:
+            attendancePercent = AttendancePercent.objects.get(enrollment_id=enrollID, student_id=studs2['id'])
+            attendancePercent.percent = attendPercent
+            attendancePercent.represent = represent
+            attendancePercent.save()
+        except:
+            attendancePercent2 = AttendancePercent(percent=attendPercent, enrollment_id=enrollID,
+                                                   student_id=studs2['id'],
+                                                   represent=represent)
+            attendancePercent2.save()
+
+    try:
+        del request.session['enrollID']
+        del request.session['startTime']
+        del request.session['duration']
+    except:
+        pass
+
+    return HttpResponse("ok")
+
+
+def ViewRecordedAttendance(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            enrollID = request.POST.get("enrollID")
+            response = {'url': reverse("tutor_view_marked_attendance", kwargs={"enrollID": enrollID})}
+            return HttpResponse(json.dumps(response), content_type="application/json")
+        else:
+            messages.error(request, "Failed! To load attendances")
+            return HttpResponseRedirect(reverse("tutor_view_classes"))
+
+
+def ViewMarkedAttendance(request, enrollID):
+    tutor = Tutor.objects.get(super_id=request.user.id)
+    attendance = Attendance.objects.filter(enrollment_id=enrollID, tutor_id=tutor.id)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(attendance, 6)
+
+    try:
+        attendances = paginator.page(page)
+    except PageNotAnInteger:
+        attendances = paginator.page(1)
+    except EmptyPage:
+        attendances = paginator.page(paginator.num_pages)
+
+    context = {"attendances": attendances}
+    return render(request, "Tutor_Pages/view_marked_attendance_template.html", context)
+
+
+def EditAttendance(request, attendID):
+    attendanceStud = AttendanceStudent.objects.filter(attendance_id=attendID)
+    students = Student.objects.all()
+    superUser = SuperUser.objects.all()
+    present = "Present"
+    absent = "Absent"
+    context = {"attendanceStud": attendanceStud, "students": students, "superUser": superUser, "present": present, "absent": absent,
+               "id": attendID}
+    return render(request, "Tutor_Pages/edit_attendance_template.html", context)
+
+
+def SaveEditAttendance(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        attendanceID = request.POST.get("attendanceID")
+        studentIDs = request.POST.getlist("studentID[]")
+        statuses = request.POST.getlist("status[]")
+        attendStudents = AttendanceStudent.objects.filter(attendance_id=attendanceID)
+        success = False
+
+        for attend in attendStudents:
+            for i in range(len(studentIDs)):
+                if str(attend.student_id) == studentIDs[i]:
+                    try:
+                        attend.status = statuses[i]
+                        attend.save()
+                        attendance = Attendance.objects.get(id=attendanceID)
+                        courseTakenID = attendance.enrollment_id
+                        attendances = Attendance.objects.filter(enrollment_id=courseTakenID)
+                        attendancesStud = AttendanceStudent.objects.all()
+                        present = 0
+                        absent = 0
+                        for attends in attendances:
+                            for attendStud in attendancesStud:
+                                if attends.id == attendStud.attendance_id:
+                                    if attendStud.student_id == int(studentIDs[i]):
+                                        if attendStud.status == "Present":
+                                            present = present + 1
+                                        else:
+                                            absent = absent + 1
+                        attendPercent = ((present / (present + absent)) * 100)
+                        represent = ""
+                        if attendPercent == 100.0:
+                            represent = "bg-success"
+                        elif 80.0 <= attendPercent < 100.0:
+                            represent = "bg-info"
+                        elif 50.0 <= attendPercent < 80.0:
+                            represent = "bg-warning"
+                        elif attendPercent < 50.0:
+                            represent = "bg-danger"
+
+                        percent = AttendancePercent.objects.get(enrollment_id=courseTakenID, student_id=studentIDs[i])
+                        percent.percent = attendPercent
+                        percent.represent = represent
+                        percent.save()
+                        success = True
+                    except:
+                        messages.error(request, "Failed to edit")
+                        return HttpResponseRedirect(
+                            reverse("tutor_edit_attendance", kwargs={"attendID": attendanceID}))
+
+        if success:
+            messages.success(request, "Successfully edited")
+            return HttpResponseRedirect(reverse("tutor_edit_attendance", kwargs={"attendID": attendanceID}))
+        else:
+            messages.error(request, "Failed to edited")
+            return HttpResponseRedirect(reverse("tutor_edit_attendance", kwargs={"attendID": attendanceID}))
+
+
 # END OF CLASSES SECTION
 
 
@@ -294,6 +549,8 @@ def DeleteSchedule(request, schID):
     except:
         messages.error(request, "Failed! To delete")
         return HttpResponseRedirect(reverse("tutor_view_schedules"))
+
+
 # END OF SCHEDULES SECTION
 
 # COURSE SECTION
@@ -342,6 +599,8 @@ def SaveAppliedCourse(request):
         else:
             messages.error(request, "Failed! To apply")
             return HttpResponse(reverse("tutor_view_cert_courses"))
+
+
 # END OF COURSE SECTION
 
 
@@ -353,17 +612,17 @@ def ViewEarnings(request):
     yearsList = []
 
     for earn in earnings:
-        year =int(earn.year)
+        year = int(earn.year)
         allYearsList.append(year)
 
     try:
         earliestYear = min(allYearsList)
         currentDate = datetime.date.today()
         currentYear = currentDate.year
-        yearDiff = (currentYear - earliestYear)+1
+        yearDiff = (currentYear - earliestYear) + 1
 
         for i in range(yearDiff):
-            year = str(earliestYear+i)
+            year = str(earliestYear + i)
             yearsList.append(year)
 
         yearsList.sort(reverse=True)
@@ -382,6 +641,8 @@ def ViewEarnings(request):
 
     context = {"yearsList": yearsList, "tutorEarnings": tutorEarnings}
     return render(request, "Tutor_Pages/view_earnings_template.html", context)
+
+
 # END OF EARNINGS SECTION
 
 

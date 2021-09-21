@@ -31,11 +31,13 @@
     {% url 'admin_edit_tutors' superID=id as admin_edit_tutors %}
     {% url 'admin_view_tutor_payment' tutorID=id as admin_view_tutor_payment %}
     {% url 'admin_view_tutor_certifications' tutID=id as admin_view_tutor_certifications %}
+    {% url 'admin_view_tutor_certify_request' as admin_view_tutor_certify_request %}
     <li class="nav-item">
       <a class="nav-link {% if request.path == admin_view_tutors %} active {% endif %}
         {% if request.path == admin_edit_tutors %} active {% endif %}
         {% if request.path == admin_view_tutor_payment %} active {% endif %}
-        {% if request.path == admin_view_tutor_certifications %} active {% endif %}" href="{{ admin_view_tutors }}">
+        {% if request.path == admin_view_tutor_certifications %} active {% endif %}
+        {% if request.path == admin_view_tutor_certify_request %} active {% endif %}" href="{{ admin_view_tutors }}">
         <i class="ni ni-single-02 text-default"></i>
         <span class="nav-link-text">Tutors</span>
       </a>

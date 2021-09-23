@@ -30,8 +30,7 @@
                 <thead class="thead-dark">
                   <tr>
                     <th scope="col">Revenue ID</th>
-                    <th scope="col">Student ID</th>
-                    <th scope="col">Student Name</th>
+                    <th scope="col">Payment ID</th>
                     <th scope="col">Earned </th>
                     <th scope="col">Month</th>
                     <th scope="col">Year</th>
@@ -47,21 +46,10 @@
                       <span class="name mb-0 text-sm">{{ earn.id }}</span>
                     </th>
                     <th scope="row">
-                      <span class="name mb-0 text-sm">{{ earn.student_id }}</span>
+                      <span class="name mb-0 text-sm">{{ earn.student_payment_id }}</span>
                     </th>
                     <th scope="row">
-                        {% for stud in student %}
-                            {% ifequal earn.student_id stud.id %}
-                                {% for sup in superUser %}
-                                    {% ifequal stud.super_id sup.id %}
-                                        <span class="name mb-0 text-sm">{{ sup.first_name }} {{ sup.last_name }}</span>
-                                    {% endifequal %}
-                                {% endfor %}
-                            {% endifequal %}
-                        {% endfor %}
-                    </th>
-                    <th scope="row">
-                      <span class="name mb-0 text-sm">{{ earn.earned }}</span>
+                      <span class="name mb-0 text-sm">RM{{ earn.earned }}</span>
                     </th>
                     <th scope="row">
                       <span class="name mb-0 text-sm">{{ earn.month }}</span>

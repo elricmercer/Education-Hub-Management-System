@@ -22,11 +22,11 @@ from MainApp_app import views, AdminViews, SuperUserViews, TutorViews, StudentVi
 
 urlpatterns = [
     # COMMON
+    path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('', views.ShowLoginPage, name='show_login'),
     path('login', views.DoLogin, name='doLogin'),
-    path('logout', views.DoLogout, name='logout'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('logout', views.DoLogout, name='doLogout'),
 
     # SUPER USER
     path('admin_view_administrators', SuperUserViews.ViewAdministrators, name="admin_view_administrators"),

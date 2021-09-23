@@ -195,9 +195,7 @@ def DeleteAdmin(request, superUserID):
 
 # REVENUE SECTION
 def ViewRevenue(requests):
-    earned = CompanyEarnings.objects.all()
-    student = Student.objects.all()
-    superUser = SuperUser.objects.all()
+    earned = CompanyEarnings.objects.all().order_by('-created_at')
     allYearList = []
     yearsList = []
 
@@ -228,6 +226,6 @@ def ViewRevenue(requests):
         earnings = paginator.page(paginator.num_pages)
 
     yearsList.sort(reverse=True)
-    context = {"earnings": earnings, "student": student, "superUser": superUser, "yearsList": yearsList}
+    context = {"earnings": earnings, "yearsList": yearsList}
     return render(requests, "Super_User_Pages/view_revenue_template.html", context)
 # END OF REVENUE SECTION

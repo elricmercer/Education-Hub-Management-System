@@ -44,29 +44,29 @@ def Dashboard(request):
     decTotal = 0
 
     for earn in earnings:
-        if earn.month == "Jan":
+        if earn.month == "1":
             janTotal = janTotal + float(earn.earned)
-        if earn.month == "Feb":
+        if earn.month == "2":
             febTotal = febTotal + float(earn.earned)
-        if earn.month == "Mar":
+        if earn.month == "3":
             marTotal = marTotal + float(earn.earned)
-        if earn.month == "Apr":
+        if earn.month == "4":
             aprTotal = aprTotal + float(earn.earned)
-        if earn.month == "May":
+        if earn.month == "5":
             mayTotal = mayTotal + float(earn.earned)
-        if earn.month == "Jun":
+        if earn.month == "6":
             junTotal = junTotal + float(earn.earned)
-        if earn.month == "Jul":
+        if earn.month == "7":
             julTotal = julTotal + float(earn.earned)
-        if earn.month == "Aug":
+        if earn.month == "8":
             augTotal = augTotal + float(earn.earned)
-        if earn.month == "Sep":
+        if earn.month == "9":
             sepTotal = sepTotal + float(earn.earned)
-        if earn.month == "Oct":
+        if earn.month == "10":
             octTotal = octTotal + float(earn.earned)
-        if earn.month == "Nov":
+        if earn.month == "11":
             novTotal = novTotal + float(earn.earned)
-        if earn.month == "Dec":
+        if earn.month == "12":
             decTotal = decTotal + float(earn.earned)
 
     context = {"totalStudents": totalStudents, "totalTutors": totalTutors, "totalAdmins": totalAdmins,
@@ -425,7 +425,7 @@ def SearchStudentPayment(request):
 def ViewStudentPayment(request, studID):
     student = Student.objects.get(id=studID)
     superUser = SuperUser.objects.get(id=student.super_id)
-    pay = StudentPayment.objects.filter(student_id=studID).order_by('id')
+    pay = StudentPayment.objects.filter(student_id=studID).order_by('-created_at')
     page = request.GET.get('page', 1)
     paginator = Paginator(pay, 6)
 
@@ -438,6 +438,47 @@ def ViewStudentPayment(request, studID):
 
     context = {"student": student, "superUser": superUser, "pays": pays, "id": studID}
     return render(request, "Admin_Pages/view_student_payments_template.html", context)
+
+
+def SaveStudentCharge(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            payment = request.POST.get("payment")
+            info = request.POST.get("info")
+            studentID = request.POST.get("studentID")
+
+            for i in range(len(payment)):
+                if payment[i] == "0" or payment[i] == "1" or payment[i] == "2" or payment[i] == "3" or payment[i] == "4" or payment[i] == "5" or payment[i] == "6" or payment[i] == "7" or payment[i] == "8" or payment[i] == "9" or payment[i] == ".":
+                    pass
+                else:
+                    return HttpResponse("payment")
+
+            infoFinal = info.replace('\n', '<br>')
+            currentDate = datetime.date.today()
+
+            try:
+                studentPayment = StudentPayment(info=infoFinal, outstanding=payment, date=currentDate, status="Outstanding",
+                                                student_id=studentID, paid="0")
+                studentPayment.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            studentID = request.POST.get("studentID")
+            messages.error(request, "Failed! To Charge")
+            return HttpResponseRedirect(reverse("admin_view_student_payment", kwargs={"studID": studentID}))
+
+
+def DeleteStudentCharge(request, payID, studID):
+    try:
+        studentPayment = StudentPayment.objects.filter(id=payID).delete()
+        messages.success(request, "Deleted")
+        return HttpResponseRedirect(reverse("admin_view_student_payment", kwargs={"studID": studID}))
+    except:
+        messages.error(request, "Failed! To delete")
+        return HttpResponseRedirect(reverse("admin_view_student_payment", kwargs={"studID": studID}))
 
 
 # END OF STUDENT SECTION
@@ -654,7 +695,7 @@ def SearchTutorPayment(request):
 def ViewTutorPayment(request, tutorID):
     tutor = Tutor.objects.get(id=tutorID)
     superUser = SuperUser.objects.get(id=tutor.super_id)
-    pay = TutorEarnings.objects.filter(tutor_id=tutorID).order_by('id')
+    pay = TutorEarnings.objects.filter(tutor_id=tutor.id).order_by('-created_at')
     page = request.GET.get('page', 1)
     paginator = Paginator(pay, 6)
 
@@ -667,6 +708,48 @@ def ViewTutorPayment(request, tutorID):
 
     context = {"tutor": tutor, "superUser": superUser, "pays": pays, "id": tutorID}
     return render(request, "Admin_Pages/view_tutor_payment_template.html", context)
+
+
+def SavePayTutor(request):
+    if request.method != "POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        if request.is_ajax():
+            payment = request.POST.get("payment")
+            info = request.POST.get("info")
+            tutorID = request.POST.get("tutorID")
+            
+            for i in range(len(payment)):
+                if payment[i] == "0" or payment[i] == "1" or payment[i] == "2" or payment[i] == "3" or payment[i] == "4" or payment[i] == "5" or payment[i] == "6" or payment[i] == "7" or payment[i] == "8" or payment[i] == "9" or payment[i] == ".":
+                    pass
+                else:
+                    return HttpResponse("payment")
+
+            infoFinal = info.replace('\n', '<br>')
+            currentDate = datetime.date.today()
+            month = currentDate.month
+            year = currentDate.year
+
+            try:
+                tutorEarnings = TutorEarnings(earned=payment, month=month, year=year, info=infoFinal, tutor_id=tutorID)
+                tutorEarnings.save()
+                return HttpResponse("success")
+            except:
+                return HttpResponse("failed")
+        else:
+            tutorID = request.POST.get("tutorID")
+            messages.error(request, "Failed! To pay")
+            return HttpResponseRedirect(reverse("admin_view_tutor_payment", kwargs={"tutorID": tutorID}))
+
+
+def DeletePayment(request, earnedID, tutorID):
+    try:
+        earnings = TutorEarnings.objects.filter(id=earnedID).delete()
+        messages.success(request, "Deleted")
+        return HttpResponseRedirect(reverse("admin_view_tutor_payment", kwargs={"tutorID": tutorID}))
+    except:
+        messages.error(request, "Failed! To delete")
+        return HttpResponseRedirect(reverse("admin_view_tutor_payment", kwargs={"tutorID": tutorID}))
 
 
 def SearchTutorCertification(request):
@@ -1660,4 +1743,4 @@ def UpdateInquiryStatus(request):
             return HttpResponseRedirect(reverse("admin_view_inquiries"))
 # END OF INQUIRY SECTION
 
-# NOTE: payments for both student and tutor
+# NOTE: testing

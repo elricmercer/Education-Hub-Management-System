@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from Education_Hub_Management_System import settings
 from MainApp_app import views, AdminViews, SuperUserViews, TutorViews, StudentViews
@@ -24,8 +24,9 @@ urlpatterns = [
     # COMMON
     path('admin/', admin.site.urls),
     path('', views.ShowLoginPage, name='show_login'),
-    path('login', views.DoLogin, name='login'),
+    path('login', views.DoLogin, name='doLogin'),
     path('logout', views.DoLogout, name='logout'),
+    path('accounts/', include('django.contrib.auth.urls')),
 
     # SUPER USER
     path('admin_view_administrators', SuperUserViews.ViewAdministrators, name="admin_view_administrators"),
@@ -86,6 +87,10 @@ urlpatterns = [
     path('admin_update_inquiry_status_save', AdminViews.UpdateInquiryStatus, name="admin_update_inquiry_status_save"),
     path('admin_view_tutor_certify_request', AdminViews.ViewCertifyRequest, name="admin_view_tutor_certify_request"),
     path('admin_tutor_certify_request_save', AdminViews.SaveCertifyRequest, name="admin_tutor_certify_request_save"),
+    path('admin_pay_tutor_save', AdminViews.SavePayTutor, name="admin_pay_tutor_save"),
+    path('admin_delete_pay_tutor/<str:earnedID>/<str:tutorID>', AdminViews.DeletePayment, name="admin_delete_pay_tutor"),
+    path('admin_charge_student_save', AdminViews.SaveStudentCharge, name="admin_charge_student_save"),
+    path('admin_delete_charge_student/<str:payID>/<str:studID>', AdminViews.DeleteStudentCharge, name="admin_delete_charge_student"),
 
     # TUTOR
     path('tutor_dashboard', TutorViews.Dashboard, name="tutor_dashboard"),

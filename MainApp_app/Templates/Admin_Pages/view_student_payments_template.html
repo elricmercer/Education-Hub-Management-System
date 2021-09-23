@@ -8,9 +8,50 @@
   <div class="container-fluid">
     <div class="header-body">
       <div class="row align-items-center py-4">
-        <div class="col-lg-1 col-6 text-left">
+        <div class="col-lg-2 col-6 text-left">
+          <a href="#ModalCharge" data-toggle="modal" class="btn btn-sm btn-neutral">Charge Payment</a>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+<!--PAY MODAL-->
+<div class="modal fade" tabindex="-1" role="dialog" id="ModalCharge">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Charge Payment Form</h5>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <form id="charge" role="form">
+            {% csrf_token %}
+            <input type="hidden" name="studentID" value="{{ id }}">
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Charge (RM):</label>
+                    <input class="form-control" type="text" name="payment" maxlength="255" placeholder="eg: 1000" required="required">
+                    <div id="payment"></div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" style="margin-bottom: 10px;">Info:</label>
+                    <textarea class="form-control" name="info" placeholder="eg: Something.......(optional)" rows="10"></textarea>
+                    <div id="info"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="success"></div>
+            <div id="failed"></div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Charge</button>
+            </div>
+          </form>
+        </div>
     </div>
   </div>
 </div>
@@ -27,29 +68,64 @@
           <table class="table align-items-center table-dark table-flush">
             <thead class="thead-dark">
               <tr>
-                <th scope="col">IN PROGRESS</th>
-                <th scope="col"></th>
+                <th scope="col">Payment ID</th>
+                <th scope="col">Student Name</th>
+                <th scope="col">Outstanding</th>
+                <th scope="col">Paid</th>
+                <th scope="col">Date</th>
+                <th scope="col">Info</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created at</th>
+                <th scope="col">Update at</th>
+                {% if request.user.user_type == "1" %}
+                  <th scope="col"></th>
+                {% endif %}
               </tr>
             </thead>
             <tbody class="list">
+            {% for pay in pays %}
               <tr>
                 <th scope="row">
-                  <span class="name mb-0 text-sm">IN PROGRESS</span>
+                  <span class="name mb-0 text-sm">{{ pay.id }}</span>
                 </th>
-                <td class="text-right">
-                  <div class="dropdown">
-                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-ellipsis-v"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                        <a class="dropdown-item" href="#">Edit</a>
-                        {% if request.user.user_type == "1" %}
-                            <a class="dropdown-item" href="#" onclick="return confirm('Are you sure you want to remove this payment')">Delete</a>
-                        {% endif %}
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ superUser.first_name }} {{ superUser.last_name }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">RM{{ pay.outstanding }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">RM{{ pay.paid }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ pay.date }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ pay.info | safe }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ pay.status }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ pay.created_at }}</span>
+                </th>
+                <th scope="row">
+                  <span class="name mb-0 text-sm">{{ pay.updated_at }}</span>
+                </th>
+                {% if request.user.user_type == "1" %}
+                  <td class="text-right">
+                    <div class="dropdown">
+                      <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                        <a class="dropdown-item" href="{% url 'admin_delete_charge_student' payID=pay.id studID=id %}" onclick="return confirm('Are you sure you want to remove this charge')">Delete</a>
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
+                {% endif %}
               </tr>
+            {% endfor %}
             </tbody>
           </table>
           <nav aria-label="Page navigation">
@@ -115,3 +191,80 @@
   </div>
 </div>
 {% endblock body_content_template %}
+{% block custom_js %}
+<script>
+  $(document).ready(function()
+  {
+    $("#charge").on("submit", function(event)
+    {
+      event.preventDefault()
+      var chargeForm = $("#charge")
+      console.log("calling ajax")
+
+      $.ajax
+      ({
+        type: "POST",
+        url: "{% url 'admin_charge_student_save' %}",
+        data: chargeForm.serialize(),
+
+        success: function(response)
+        {
+          console.log(response)
+
+          //PAYMENT
+          if(response=="payment")
+          {
+            $("#payment").html
+            (
+              '<p style="color:red"><b>Error! Enter correct payment</b></p>'
+            )
+          }
+          else
+          {
+            $("#payment").html
+            (
+              '<p></p>'
+            )
+          }
+
+          //CHARGED
+          if(response=="success")
+          {
+            $("#success").html
+            (
+              '<div class="alert alert-success" style="margin-top: 10px">Charged</div>'
+            )
+          }
+          else
+          {
+            $("#success").html
+            (
+              '<div></div>'
+            )
+          }
+
+          //FAILED
+          if(response=="failed")
+          {
+            $("#failed").html
+            (
+              '<div class="alert alert-error" style="margin-top: 10px">Failed! To charge</div>'
+            )
+          }
+          else
+          {
+            $("#failed").html
+            (
+              '<div></div>'
+            )
+          }
+        },
+        error: function(response)
+        {
+          console.log(response)
+        }
+      })
+    })
+  })
+</script>
+{% endblock custom_js %}

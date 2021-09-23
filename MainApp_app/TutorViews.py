@@ -52,29 +52,29 @@ def Dashboard(request):
     decTotal = 0
 
     for earn in earnings:
-        if earn.month == "Jan":
+        if earn.month == "1":
             janTotal = janTotal + float(earn.earned)
-        if earn.month == "Feb":
+        if earn.month == "2":
             febTotal = febTotal + float(earn.earned)
-        if earn.month == "Mar":
+        if earn.month == "3":
             marTotal = marTotal + float(earn.earned)
-        if earn.month == "Apr":
+        if earn.month == "4":
             aprTotal = aprTotal + float(earn.earned)
-        if earn.month == "May":
+        if earn.month == "5":
             mayTotal = mayTotal + float(earn.earned)
-        if earn.month == "Jun":
+        if earn.month == "6":
             junTotal = junTotal + float(earn.earned)
-        if earn.month == "Jul":
+        if earn.month == "7":
             julTotal = julTotal + float(earn.earned)
-        if earn.month == "Aug":
+        if earn.month == "8":
             augTotal = augTotal + float(earn.earned)
-        if earn.month == "Sep":
+        if earn.month == "9":
             sepTotal = sepTotal + float(earn.earned)
-        if earn.month == "Oct":
+        if earn.month == "10":
             octTotal = octTotal + float(earn.earned)
-        if earn.month == "Nov":
+        if earn.month == "11":
             novTotal = novTotal + float(earn.earned)
-        if earn.month == "Dec":
+        if earn.month == "12":
             decTotal = decTotal + float(earn.earned)
 
     context = {"totalStudents": totalStudents, "totalSchedules": totalSchedules, "totalClasses": totalClasses,

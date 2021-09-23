@@ -58,8 +58,8 @@ class StudentPayment(models.Model):
     id = models.BigAutoField(primary_key=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     info = models.TextField(blank=True, null=True)
-    outstanding = models.CharField(max_length=255)
-    paid = models.CharField(max_length=255)
+    outstanding = models.CharField(max_length=255, blank=True, null=True)
+    paid = models.CharField(max_length=255, blank=True, null=True)
     date = models.CharField(max_length=15)
     status = models.CharField(max_length=15)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -233,8 +233,7 @@ class TutorEarnings(models.Model):
 
 class CompanyEarnings(models.Model):
     id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    info = models.TextField(blank=True, null=True)
+    student_payment = models.ForeignKey(StudentPayment, on_delete=models.CASCADE)
     earned = models.CharField(max_length=255)
     month = models.CharField(max_length=5)
     year = models.CharField(max_length=6)

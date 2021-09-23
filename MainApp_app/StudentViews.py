@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from django.contrib import messages
@@ -9,7 +10,7 @@ from django.urls import reverse
 
 from Education_Hub_Management_System.settings import BASE_DIR
 from MainApp_app.models import Student, SuperUser, EnrolledStudents, Enrollment, Tutor, Course, EnrollmentDays, \
-    EnrollmentTime, AttendancePercent, Attendance, AttendanceStudent, StudentPayment, ContactUs, Admin
+    EnrollmentTime, AttendancePercent, Attendance, AttendanceStudent, StudentPayment, ContactUs, Admin, CompanyEarnings
 
 
 # PROFILE SECTION
@@ -283,8 +284,8 @@ def SavePayment(request):
             existsPayID = False
             status = "Outstanding"
 
-            for payID in paymentIDCheck:
-                if payID == str(payID.id):
+            for pay in paymentIDCheck:
+                if payID == str(pay.id):
                     existsPayID = True
                     break
 
@@ -316,6 +317,11 @@ def SavePayment(request):
                 payment.outstanding = outstanding
                 payment.status = status
                 payment.save()
+                currentDate = datetime.date.today()
+                month = currentDate.month
+                year = currentDate.year
+                companyEarnings = CompanyEarnings(earned=paid, month=month, year=year, student_payment_id=payID)
+                companyEarnings.save()
                 return HttpResponse("success")
             except:
                 return HttpResponse("failed")

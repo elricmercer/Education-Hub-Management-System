@@ -205,9 +205,9 @@ def RemoveProfilePic(request):
     admin = Admin.objects.get(super_id=request.user.id)
 
     if admin.pic is not None or admin.pic != "":
-        if os.path.exists(str(BASE_DIR) + "" + str(admin.pic)):
+        if os.path.exists(os.path.join(BASE_DIR, admin.pic)):
             try:
-                os.remove(str(BASE_DIR) + "" + str(admin.pic))
+                os.remove(os.path.join(BASE_DIR, admin.pic))
                 admin.pic = ""
                 admin.save()
                 messages.success(request, "Removed")

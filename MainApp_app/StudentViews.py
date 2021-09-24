@@ -46,9 +46,11 @@ def RemoveProfilePic(request):
     student = Student.objects.get(super_id=request.user.id)
 
     if student.pic is not None or student.pic != "":
-        if os.path.exists(os.path.join(BASE_DIR, str(student.pic))):
+        path = str(student.pic)
+        finalPath = path[1:]
+        if os.path.exists(os.path.join(BASE_DIR, finalPath)):
             try:
-                os.remove(os.path.join(BASE_DIR, str(student.pic)))
+                os.remove(os.path.join(BASE_DIR, finalPath))
                 student.pic = ""
                 student.save()
                 messages.success(request, "Removed")

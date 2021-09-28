@@ -23,7 +23,7 @@
                   {% if request.user.admin.pic == "" %}
                     <img src="{% static "img/default user/dafault user image.png"%}" type="image/png">
                   {% else %}
-                    <img src="{{ request.user.admin.pic }}">
+                    <img src="{% static request.user.admin.pic %}">
                   {% endif %}
                 </span>
                 <div class="media-body  ml-2  d-none d-lg-block">

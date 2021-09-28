@@ -47,7 +47,7 @@
                           {% if tut.pic == None or tut.pic == "" %}
                             <img class="avatar rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
                           {% else %}
-                            <img src="{{ tut.pic }}" class="avatar rounded-circle">
+                            <img src="{% static tut.pic %}" class="avatar rounded-circle">
                           {% endif %}
                         {% endifequal %}
                       {% endfor %}

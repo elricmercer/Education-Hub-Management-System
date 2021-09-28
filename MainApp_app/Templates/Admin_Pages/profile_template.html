@@ -29,7 +29,7 @@
                 {% if admin.pic == None or admin.pic == "" %}
                   <img class="rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
                 {% else %}
-                  <img src="{{ admin.pic }}" class="rounded-circle">
+                  <img src="{% static admin.pic %}" class="rounded-circle">
                 {% endif %}
               </a>
             </div>

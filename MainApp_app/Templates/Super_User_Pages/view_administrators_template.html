@@ -147,7 +147,7 @@
                       {% if ad.pic == None or ad.pic == "" %}
                         <img class="avatar rounded-circle" src="{% static "img/default user/dafault user image.png"%}" type="image/png">
                       {% else %}
-                        <img src="{{ ad.pic }}" class="avatar rounded-circle">
+                        <img src="{% static ad.pic %}" class="avatar rounded-circle">
                       {% endif %}
                     {% endifequal %}
                   {% endfor %}

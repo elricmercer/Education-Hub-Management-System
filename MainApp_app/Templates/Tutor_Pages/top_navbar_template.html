@@ -23,7 +23,7 @@
                   {% if request.user.tutor.pic == "" or request.user.tutor.pic == None %}
                     <img src="{% static "img/default user/dafault user image.png"%}" type="image/png">
                   {% else %}
-                    <img src="{{ request.user.tutor.pic }}">
+                    <img src="{% static request.user.tutor.pic %}">
                   {% endif %}
                 </span>
                 <div class="media-body  ml-2  d-none d-lg-block">

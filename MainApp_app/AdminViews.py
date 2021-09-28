@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from Education_Hub_Management_System.settings import BASE_DIR
+from Education_Hub_Management_System.settings import BASE_DIR, STATIC_ROOT
 from MainApp_app.models import Admin, SuperUser, Student, StudentPayment, Tutor, TutorEarnings, Course, \
     TutorsCertifiedToCourse, TutorApplyToCertifyToCourse, Schedule, Enrollment, EnrolledStudents, EnrollmentDays, \
     EnrollmentTime, ContactUs, CompanyEarnings
@@ -205,11 +205,12 @@ def RemoveProfilePic(request):
     admin = Admin.objects.get(super_id=request.user.id)
 
     if admin.pic is not None or admin.pic != "":
+        staticLocation = STATIC_ROOT
         path = str(admin.pic)
         finalPath = path[1:]
-        if os.path.exists(os.path.join(BASE_DIR, finalPath)):
+        if os.path.exists(os.path.join(staticLocation, finalPath)):
             try:
-                os.remove(os.path.join(BASE_DIR, finalPath))
+                os.remove(os.path.join(staticLocation, finalPath))
                 admin.pic = ""
                 admin.save()
                 messages.success(request, "Removed")

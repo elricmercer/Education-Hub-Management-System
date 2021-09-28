@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from Education_Hub_Management_System.settings import BASE_DIR
+from Education_Hub_Management_System.settings import BASE_DIR, STATIC_ROOT
 from MainApp_app.models import Tutor, SuperUser, EnrolledStudents, Enrollment, Student, EnrollmentDays, EnrollmentTime, \
     Course, TutorsCertifiedToCourse, Schedule, TutorApplyToCertifyToCourse, TutorEarnings, ContactUs, Admin, Attendance, \
     AttendanceStudent, AttendancePercent
@@ -123,11 +123,12 @@ def RemoveProfilePic(request):
     tutor = Tutor.objects.get(super_id=request.user.id)
 
     if tutor.pic is not None or tutor.pic != "":
+        staticLocation = STATIC_ROOT
         path = str(tutor.pic)
         finalPath = path[1:]
-        if os.path.exists(os.path.join(BASE_DIR, finalPath)):
+        if os.path.exists(os.path.join(staticLocation, finalPath)):
             try:
-                os.remove(os.path.join(BASE_DIR, finalPath))
+                os.remove(os.path.join(staticLocation, finalPath))
                 tutor.pic = ""
                 tutor.save()
                 messages.success(request, "Removed")

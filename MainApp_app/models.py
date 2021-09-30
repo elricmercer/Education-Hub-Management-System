@@ -67,33 +67,6 @@ class StudentPayment(models.Model):
     objects = models.Manager()
 
 
-class StudentNotification(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    info = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-
-
-class TutorNotification(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
-    info = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-
-
-class AdminNotification(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
-    info = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-
-
 class Schedule(models.Model):
     id = models.BigAutoField(primary_key=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

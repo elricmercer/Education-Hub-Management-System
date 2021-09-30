@@ -160,19 +160,6 @@ class AttendancePercent(models.Model):
     objects = models.Manager()
 
 
-class ReplacementClass(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-    issue = models.TextField(blank=True, null=True)
-    date = models.CharField(max_length=15, null=True, blank=True)
-    time = models.CharField(max_length=10, null=True, blank=True)
-    status = models.CharField(max_length=10)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
-
-
 class TutorsCertifiedToCourse(models.Model):
     id = models.BigAutoField(primary_key=True)
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
